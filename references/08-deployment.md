@@ -77,7 +77,9 @@ DSH 0.1.2 删除了 `settingsNamespace`，0.1.7 删除了 `SettingsService.regis
 
 ## 4. 恢复步骤（从归档/备份恢复）
 
-1. **源码**：`01_SOURCE/fairy-dsh` → `C:\Users\<用户>\.dsh\fairy-dsh`，执行 `pnpm install`。
+0. **必须使用本仓库 `source/` 里的插件源码**（已完成 DSH 0.2.1 移植）。**不要**直接使用上游仓库 `Chengzhibense/Fairy-DSH` 的代码：上游目标为 0.1.1-rc.2，在 DSH Harness（0.2.1）上会出现 `dsh-fairy-visual: pending (waiting for service: settingsScope)`（0.2.1 已无 settingsScope 服务）与 `dsh-fairy-startup: failed`（调用了 0.2.1 已删除的 `sessions.clear()`）。
+
+1. **源码**：`source/` → `C:\Users\<用户>\.dsh\fairy-dsh`，执行 `pnpm install`。
 2. **desktop profile**：备份现有 profile，复制 `02_DEPLOYMENT/profiles/desktop` 的 7 个文件 → `~/.dsh/profiles/desktop`，`pnpm install`；检查 cordis.patch.yml 无 BOM；本机绝对路径不同则同步修改。
 3. **运行数据**：`fairy-voice` → `~/.dsh/fairy-voice`；`fairy-visual` → `~/.dsh/fairy-visual`（只想恢复硬性功能可先忽略 `sources`；要保留训练过程/候选版本/来源记录则完整复制）。
 4. **语音模型**：`04_VOICE_PROFILE/GPT-SoVITS/voices/Fairy` → `D:\GPT-SoVITS\voices\Fairy`；用原 GPT-SoVITS 安装恢复 Python 环境。
@@ -127,6 +129,7 @@ Get-FileHash -Algorithm SHA256 .\lib\client.js,.\lib\index.iife.js
 | 开场白无声 | /fairy-voice/config 可访问、TTS 120s 内能启动 |
 | 浏览器 Dock 空白 | Edge、mcp-playwright 注册、browser-dock/state.json |
 | 修改不生效 | host 侧改动需完全重启 DSH（本构建 profile watcher 不触发，日志 `watching []`） |
+| 启动报 `web boot: 2 entries did not activate`、`dsh-fairy-startup: failed`、`dsh-fairy-visual: pending (waiting for service: settingsScope)` | 使用了上游 0.1.1 源码的症状。先点「禁用第三方插件、备份 profile patch 并重启」恢复 DSH，然后改用本仓库 `source/` 的 0.2.1 移植版源码重新部署 |
 | 主视觉隐藏后仍有脉冲层 | visibility 继承补丁（references/03 §3） |
 
 ## 7. 已知限制（DSH 0.2.1）

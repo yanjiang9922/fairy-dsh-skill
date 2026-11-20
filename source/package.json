@@ -1,0 +1,23 @@
+{
+  "name": "fairy-dsh-install",
+  "private": true,
+  "description": "Local installation root for the Fairy-DSH plugin suite (staged from github.com/Chengzhibense/Fairy-DSH).",
+  "dependencies": {
+    "@deepseek-ai/cordis": "^4.1.0",
+    "@deepseek-ai/dsh-invariants": "0.1.1-rc.2",
+    "@deepseek-ai/dsh-llm": "0.1.1-rc.2",
+    "@deepseek-ai/dsh-settings": "0.1.1-rc.2",
+    "@deepseek-ai/dsh-timeout": "0.1.1-rc.2",
+    "@deepseek-ai/dsh-web": "0.1.1-rc.2",
+    "@deepseek-ai/dsh-web-search-deepseek": "0.1.1-rc.2",
+    "@deepseek-ai/dsh-web-search-exa": "0.1.1-rc.2",
+    "@deepseek-ai/dsh-web-search-perplexity": "0.1.1-rc.2",
+    "@deepseek-ai/schemastery": "3.18.1",
+    "dsh-balance-meter": "workspace:*",
+    "dsh-browser-dock": "workspace:*",
+    "dsh-fairy-contracts": "workspace:*",
+    "dsh-fairy-startup": "workspace:*",
+    "dsh-fairy-visual": "workspace:*",
+    "dsh-fairy-voice": "workspace:*"
+  }
+}

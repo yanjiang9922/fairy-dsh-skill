@@ -27,6 +27,8 @@ description: Fairy-DSH 桌面 AI 助手人格与视觉套件的完整功能规�
 | dsh-browser-dock | 0.1.0 | Playwright MCP 浏览器画面 Dock |
 | dsh-fairy-contracts | 0.1.0 | 公共设置契约和客户端诊断 |
 
+7 个模块的**已移植 DSH 0.2.1 的源码**在本仓库 `source/` 目录（部署必须用它，不要用上游 0.1.1 代码，见 references/08 §4）。
+
 ## 参考文档索引
 
 按需读取以下 reference 文件，不要一次全部加载：

@@ -1,0 +1,10 @@
+packages:
+  - 'fairy-contracts'
+  - 'balance-meter/dsh-balance-meter'
+  - 'browser-dock/dsh-browser-dock'
+  - 'fairy-startup/dsh-fairy-startup'
+  - 'fairy-visual/dsh-fairy-visual'
+  - 'fairy-voice/dsh-fairy-voice'
+
+nodeLinker: hoisted
+autoInstallPeers: false

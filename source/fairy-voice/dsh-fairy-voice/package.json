@@ -1,0 +1,39 @@
+{
+  "name": "dsh-fairy-voice",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Fairy voice for DSH: automatic local GPT-SoVITS turn reports plus 44 pi-fairy event sounds.",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-primitives"
+      ]
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "node test/selftest.mjs && node test/client-detectors.mjs && node test/data-dir.mjs"
+  },
+  "files": [
+    "lib",
+    "assets",
+    "docs",
+    "test",
+    "cordis.patch.yml",
+    "README.md"
+  ]
+}
