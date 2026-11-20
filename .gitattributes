@@ -1,0 +1,6 @@
+# Git LFS: 单文件超过 GitHub 100MB 限制的资产
+assets/gpt-sovits/voices/Fairy/gpt.ckpt filter=lfs diff=lfs merge=lfs -text
+assets/gpt-sovits/voices/Fairy/sovits.pth filter=lfs diff=lfs merge=lfs -text
+assets/fairy-voice/sources/bilibili/BV17bno6GEeG.wav filter=lfs diff=lfs merge=lfs -text
+*.ckpt filter=lfs diff=lfs merge=lfs -text
+*.pth filter=lfs diff=lfs merge=lfs -text

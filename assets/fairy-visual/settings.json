@@ -1,0 +1,18 @@
+{
+  "visual": {
+    "version": 2,
+    "enabled": true,
+    "theme": "dark",
+    "mascotVisible": true,
+    "mascotScale": 1,
+    "mascotAnimationSpeed": 1,
+    "powerMode": "normal",
+    "composerDockHeight": 132
+  },
+  "identity": {
+    "mode": "ling",
+    "customName": "",
+    "secondAssistant": "",
+    "household": []
+  }
+}

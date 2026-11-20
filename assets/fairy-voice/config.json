@@ -1,0 +1,142 @@
+{
+  "version": 2,
+  "enabled": true,
+  "muted": false,
+  "volume": 0.8,
+  "triggers": {
+    "welcome": true,
+    "goodbye": true,
+    "task-start": true,
+    "success": false,
+    "aborted": true,
+    "error": true,
+    "network-error": true,
+    "retry": true,
+    "new-session": true,
+    "session-switch": true,
+    "model-switch": true,
+    "permission": true,
+    "permission-approved": true,
+    "permission-denied": true,
+    "context-warning": true,
+    "quota-warning": false,
+    "compact-auto": true,
+    "compact-manual": true,
+    "compact-success": true,
+    "compaction-failed": true,
+    "input": true,
+    "activity": true,
+    "voice-on": true,
+    "voice-off": true
+  },
+  "soundSelections": {
+    "welcome": [
+      "welcome-1.wav",
+      "welcome-2.wav",
+      "welcome-3.wav",
+      "welcome-4.wav",
+      "welcome-5.wav"
+    ],
+    "goodbye": [
+      "goodbye-1.wav",
+      "goodbye-2.wav",
+      "goodbye-3.wav",
+      "goodbye-4.wav",
+      "goodbye-5.wav",
+      "goodbye-6.wav"
+    ],
+    "task-start": [
+      "task-start-1.wav",
+      "task-start-2.wav",
+      "task-start-3.wav",
+      "task-start-4.wav"
+    ],
+    "success": [
+      "success-1.wav",
+      "success-2.wav",
+      "success-3.wav"
+    ],
+    "aborted": [
+      "aborted.wav"
+    ],
+    "error": [
+      "error.wav"
+    ],
+    "network-error": [
+      "network-error.wav"
+    ],
+    "retry": [
+      "retry.wav"
+    ],
+    "new-session": [
+      "new-session.wav"
+    ],
+    "session-switch": [
+      "session-switch.wav"
+    ],
+    "model-switch": [
+      "model-switch.wav"
+    ],
+    "permission": [
+      "permission-1.wav",
+      "permission-2.wav",
+      "permission-3.wav"
+    ],
+    "permission-approved": [
+      "permission-approved.wav"
+    ],
+    "permission-denied": [
+      "permission-denied.wav"
+    ],
+    "context-warning": [
+      "context-warning.wav"
+    ],
+    "quota-warning": [
+      "quota-warning.wav"
+    ],
+    "compact-auto": [
+      "compact-auto.wav"
+    ],
+    "compact-manual": [
+      "compact-manual.wav"
+    ],
+    "compact-success": [
+      "compact-success.wav"
+    ],
+    "compaction-failed": [
+      "compaction-failed.wav"
+    ],
+    "input": [
+      "input.wav"
+    ],
+    "activity": [
+      "activity-1.wav",
+      "activity-2.wav",
+      "activity-3.wav"
+    ],
+    "voice-on": [
+      "voice-on.wav"
+    ],
+    "voice-off": [
+      "voice-off.wav"
+    ]
+  },
+  "activityMinutes": 60,
+  "contextWarningRatio": 0.8,
+  "quotaWarningAmount": 10,
+  "soundsDir": "",
+  "packGain": 1,
+  "autoReport": true,
+  "startupVoice": {
+    "enabled": true,
+    "preset": "full",
+    "customText": "",
+    "greetingEnabled": true,
+    "greetingPauseMs": 1500
+  },
+  "tts": {
+    "endpoint": "http://127.0.0.1:9880",
+    "voice": "Fairy",
+    "speed": 1.06
+  }
+}

@@ -1,0 +1,17 @@
+Fairy-DSH Skill (function-specification documentation)
+Copyright 2026, based on the Fairy-DSH archive created by the repository owner.
+
+This repository contains original documentation and configuration
+specifications released under the Apache License, Version 2.0.
+
+It documents the Fairy-DSH plugin suite whose upstream source is
+https://github.com/Chengzhibense/Fairy-DSH (Apache-2.0, Copyright 2026
+Chengzhibense). Event sound semantics follow the pi-fairy project
+(https://github.com/ymd-physics/pi-fairy) modules/voice.
+
+Fairy, DSH, DeepSeek, Zenless Zone Zero, and related names or marks are not
+licensed by this NOTICE. Game text, official assets, private world data,
+user data, and personal corpora are intentionally not distributed by this
+repository. This repository ships only functional specifications; voice
+model weights, fitted reference audio, event sound files, and the boot
+animation are excluded by design (see references/09-assets-and-licensing.md).
