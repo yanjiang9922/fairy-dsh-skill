@@ -12,15 +12,29 @@ Fairy-DSH 桌面 AI 助手的**完整功能规格 + 全部运行资产**。将�
 
 ## 快速使用
 
-1. 克隆（大文件走 Git LFS）：
+**推荐（一步拿全 592MB 资产）**：
 
 ```powershell
 git lfs install
-git clone https://github.com/<你的用户名>/fairy-dsh-skill.git
+git clone https://github.com/yanjiang9922/fairy-dsh-skill.git
 ```
+
+**注意：不要用「Download ZIP」下载整个仓库**——GitHub 的 zip 源码包不含 Git LFS 实体，`gpt.ckpt`、`sovits.pth`、`BV17bno6GEeG.wav` 会变成几百字节的指针壳文件。
+
+如果已经用 zip 下载了仓库：从 [v1.0.0 Release](https://github.com/yanjiang9922/fairy-dsh-skill/releases/tag/v1.0.0) 下载 `fairy-dsh-lfs-assets.zip`（约 309 MB），解压后把其中 3 个文件覆盖到 `assets/` 对应路径即可。
 
 2. 阅读 `SKILL.md` 了解模块结构；按 `references/08-deployment.md` 部署到 DSH Desktop 2.0.19-next。
 3. 声线模型放回 `D:\GPT-SoVITS\voices\Fairy`，启动 `start-api.bat`（监听 127.0.0.1:9880）后重启 DSH。
+
+### 测试者网络排错（Windows 常见）
+
+若下载/克隆时遇到 schannel 报错或 github.com 连不上，问题通常在本机网络，与仓库无关：
+
+- **github.com 解析到 127.0.0.1 或可疑 IP**：本机 hosts 文件被加速器（如 Steam++ / Watt Toolkit）写入映射。打开加速器启用 GitHub 加速，或注释掉 hosts 中对应行后执行 `ipconfig /flushdns`。
+- **curl / git 报 schannel 错误**（`SEC_E_NO_CREDENTIALS`、`CRYPT_E_NO_REVOCATION_CHECK` 等）：
+  - curl 临时规避：`curl --ssl-no-revoke ...`
+  - git 规避：`git config --global http.schannelCheckRevoke false`
+  - 或改用 Python 请求（`urllib`/`requests` 走 OpenSSL，不依赖 schannel）下载 Release 资产。
 
 ## 核心功能
 

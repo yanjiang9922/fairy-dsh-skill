@@ -20,7 +20,7 @@
 | `assets/gpt-sovits/voices/Fairy/` | gpt.ckpt / sovits.pth 拟合权重 + 7 组参考声线（wav/txt） | 233 MB |
 | `assets/gpt-sovits-runtime/` | start-api.bat、config.py、requirements.txt | <10 KB |
 
-超 100MB 的单文件（`gpt.ckpt`、`BV17bno6GEeG.wav`）通过 **Git LFS** 存储；克隆本仓库需安装 git-lfs（`git lfs install && git clone …`）。
+超 100MB 的单文件（`gpt.ckpt`、`BV17bno6GEeG.wav`）通过 **Git LFS** 存储；克隆本仓库需安装 git-lfs（`git lfs install && git clone …`）。**GitHub 的 zip 源码包不含 LFS 实体**：用 zip 下载的仓库中这 3 个文件是指针壳，需从 [v1.0.0 Release](https://github.com/yanjiang9922/fairy-dsh-skill/releases/tag/v1.0.0) 下载 `fairy-dsh-lfs-assets.zip`（约 309 MB）覆盖到 `assets/` 对应路径。
 
 ## 3. 版权声明（重要）
 
