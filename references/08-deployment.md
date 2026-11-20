@@ -7,6 +7,21 @@
 - Profile：`~/.dsh/profiles/desktop`，通过 **cordis.patch.yml 的 insert 列表**注册 6 个客户端插件 + Playwright MCP；包依赖用 `link:../../fairy-dsh/...` 本地链接。
 - 关键依赖版本：Node 24.x、pnpm 11.8.0、`@deepseek-ai/cordis` ^4.1.0、`@deepseek-ai/dsh-*` 0.1.1-rc.2（由 DSH 自身 resolver 提供，本地以可选 peerDependencies 声明，避免装出第二份旧 settings 包）、`@playwright/mcp@0.0.79`。
 
+### 安全与来源警示（部署前必读）
+
+- 本 skill 描述的注册模板是 **desktop profile**（cordis.patch.yml + desktop-next.*.patch.json），**不含** `danger-full-access`，**不会**把审批策略改为 `never`。
+- 上游仓库 `Chengzhibense/Fairy-DSH` 的 `profiles/web/cordis.patch.yml` 是**测试用 web profile 模板**，带有放宽安全的补丁（danger-full-access、审批 never）。**不要**把上游模板直接套用到日常 desktop profile；若要参考上游，只取插件注册思路，安全相关补丁一律保留默认。
+- desktop profile 的附加 patch 文件：
+  - `desktop-next.cordis.patch.json`：agents-anywhere 桥接的本机绝对路径配置（dshHome、connectorSourceDir、uvPath），换机器需同步修改。
+  - `desktop-next.runtime.patch.json`：`desktop-next-webserver` 监听 `127.0.0.1`（port 0 = 随机）；`connection.trustedHosts` 含局域网测试主机 IP（`10.159.68.16`），按需增删。
+
+### 硬件与语音环境要求（GPT-SoVITS）
+
+- NVIDIA GPU：**RTX 50 系（Blackwell）必须 CUDA 12.8+，torch 需 cu128 及以上版本**；旧整合包内置的 torch（cu121 等）在 50 系上无法运行。RTX 30/40 系用 torch cu121 即可；纯 CPU 可跑但合成很慢。
+- 第三方「一键整合包」来源不明，不建议安装；建议从 GPT-SoVITS 官方仓库源码安装，torch + 模型约 6–8 GB 磁盘。
+- 本 skill 的 `assets/gpt-sovits/voices/Fairy` 是**推理产物**（gpt.ckpt / sovits.pth + 参考声线），只需放进已装好的 GPT-SoVITS 环境即可推理，不需要重新训练。
+- 建议部署顺序：先装 GPT-SoVITS 并验证 `127.0.0.1:9880` 能出声（不动 DSH），再接插件。
+
 ## 2. 注册清单（cordis.patch.yml）
 
 ```yaml
