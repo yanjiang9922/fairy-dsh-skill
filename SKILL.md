@@ -44,6 +44,7 @@ description: Fairy-DSH 桌面 AI 助手人格与视觉套件的完整功能规�
 | GPT-SoVITS 本地 TTS 桥与声线档案 | references/07-tts-gpt-sovits.md |
 | 部署架构、注册、持久化、恢复与排错 | references/08-deployment.md |
 | 资产清单、来源与版权声明（assets/ 已含全部音频、画面与模型） | references/09-assets-and-licensing.md |
+| Fairy 人格提示词模板（让模型自认为是 Fairy，插件不负责这一层） | references/10-fairy-persona-prompt.md |
 
 ## 核心工作流
 
