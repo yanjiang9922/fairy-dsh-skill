@@ -19,6 +19,8 @@
 
 - NVIDIA GPU：**RTX 50 系（Blackwell）必须 CUDA 12.8+，torch 需 cu128 及以上版本**；旧整合包内置的 torch（cu121 等）在 50 系上无法运行。RTX 30/40 系用 torch cu121 即可；纯 CPU 可跑但合成很慢。
 - 第三方「一键整合包」来源不明，不建议安装；建议从 GPT-SoVITS 官方仓库源码安装，torch + 模型约 6–8 GB 磁盘。
+- **依赖组合以本仓库 `assets/gpt-sovits-runtime/requirements.txt` 为准**（librosa 0.10.2 / ffmpeg-python / av 系，**不含 torchcodec**）。原机实测：GPT-SoVITS v5 代码 + 该依赖清单可正常推理。
+- **torchcodec 坑（Windows 常见）**：若安装流程引入了 torchcodec，其未签名的 `libtorchcodec_core9.dll` 会被 Windows 智能应用控制（Smart App Control）拦截，报 `WinError 4551`。解决：`pip uninstall torchcodec -y`（音频加载自动回退 librosa/ffmpeg），或按上述 requirements 重装依赖。**不要**为此关闭 Smart App Control（关闭不可逆，需重装系统才能再启用）。
 - 本 skill 的 `assets/gpt-sovits/voices/Fairy` 是**推理产物**（gpt.ckpt / sovits.pth + 参考声线），只需放进已装好的 GPT-SoVITS 环境即可推理，不需要重新训练。
 - 建议部署顺序：先装 GPT-SoVITS 并验证 `127.0.0.1:9880` 能出声（不动 DSH），再接插件。
 
