@@ -1,5 +1,11 @@
 # Fairy-DSH — deployment notes
 
+> **部署前必读（本仓库补充说明）**：
+>
+> 1. 本文是**上游部署记录**，描述的是「5 个插件」的上游部署形态。**最终桌面部署实际注册 6 个插件**——在本文基础上增加了 `dsh-fairy-idle`（待机语音），加上 `dsh-fairy-contracts` 共 7 个包（profile 里 7 条 link、cordis.patch.yml 里 6 条 insert）。注册清单以 `references/08-deployment.md` 为准。
+> 2. 本文「Known limitations」提到的 `fairy_ref.wav` 路径是**上游旧约定**，最终部署不使用它；真实语音配置是 GPT-SoVITS 服务 `http://127.0.0.1:9880` + `voices/Fairy` 模型目录（`DSH_TTS_VOICES`），见 `references/07-tts-gpt-sovits.md`。
+> 3. 未启动 GPT-SoVITS 服务时，HDD 主题、Fairy 主视觉、44 段事件音效、启动动画均正常工作，仅回合语音汇报/开场白/时段问候（TTS）不可用。
+
 Source: https://github.com/Chengzhibense/Fairy-DSH (branch `main`, downloaded 2026-11-05).
 Licence: Apache-2.0 (`LICENSE` / `NOTICE` kept in this directory).
 Target host: DSH 0.2.1-rc.2 (desktop 2.0.19-next, `resources/runtime/x64/primary-runtime/runtime.json`).
