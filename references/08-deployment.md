@@ -20,6 +20,7 @@
 - NVIDIA GPU：**RTX 50 系（Blackwell）必须 CUDA 12.8+，torch 需 cu128 及以上版本**；旧整合包内置的 torch（cu121 等）在 50 系上无法运行。RTX 30/40 系用 torch cu121 即可；纯 CPU 可跑但合成很慢。
 - **torch 版本窗口（实测）**：`torchaudio ≥2.9` 的 `load` 强制走 torchcodec（报 `TorchCodec is required`）；`torch <2.6` 被 `transformers 4.57` 拒绝。**CPU 环境唯一同时满足且不需要 torchcodec 的组合是 torch 2.6.0 + torchaudio 2.6.0**。GPU（cu128）环境同理按 2.6.x 基线选配套版本。
 - **pyopenjtalk（Windows）**：无官方 wheel，需本地编译：VS Build Tools + Windows SDK 10.0.26100；若 vcvars 未带 SDK 的 bin/Lib/Include，需手动补齐后再 pip install。
+- **jieba_fast（Windows）**：官方只发 sdist，同样需要 MSVC 编译器。**无编译器变通**：改用纯 Python `jieba` 顶替（分词结果等价、速度略慢，社区标准做法）；`pyopenjtalk` 只有日文文本前端才需要，纯中文场景可跳过或改用 `pyopenjtalk-prebuilt`。追求严格复现再装 VS Build Tools（约 2–4GB，含 VCTools + Windows SDK 工作负载）。
 - **pnpm 三约束（profile 安装时）**：① profile 需加 `ignoreWorkspaceRootCheck`（否则 `plugin_manager install_bundle` 报 `ERR_PNPM_ADDING_TO_ROOT`）；② 需与 DSH 共用默认 store（否则 `ERR_PNPM_UNEXPECTED_STORE`）；③ 换 store 后要 `--force` 重装才真正切换。
 - 第三方「一键整合包」来源不明，不建议安装；建议从 GPT-SoVITS 官方仓库源码安装，torch + 模型约 6–8 GB 磁盘。
 - **依赖组合以本仓库 `assets/gpt-sovits-runtime/requirements.txt` 为准**（librosa 0.10.2 / ffmpeg-python / av 系，**不含 torchcodec**）。原机实测：GPT-SoVITS v5 代码 + 该依赖清单可正常推理。
