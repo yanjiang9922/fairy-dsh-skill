@@ -13,6 +13,7 @@
 1. `restyleComposer()` 直接返回 —— 不再对 composer 卡片写 `display:block / height:132px / padding:0`，不再把输入区 `position:absolute; inset:2px`，不再把模型控件根节点压成 0×0，不再重排发送/添加/权限按钮。
 2. `placeVoiceBar()` 直接返回 —— 不再按旧几何绘制右侧语音条。
 3. **v2 新增**：`mountComposerDock` 的 `bind()` 与 `markControls()` 直接返回 —— 整个 composer dock 层（标记投影、材质层、眼睛大小/动画速度胶囊、拖拽手柄、workspace 投影、inset 同步、内容锚点、to-bottom 定位）在 0.2.2 上全部不挂载，所有挂在 `[data-dsh-fairy-composer-dock]` 作用域下的破坏性 CSS 因此全部失活。
+4. **v3 新增**：dock 的布局 `schedule()` 也直接返回 —— resize 触发的 `sync` 路径不再写 seat 的 `left/width/height` 内联几何，0.2.2 上 seat/卡片保持完全原生。
 
 ## 0.2.2 上的预期效果
 
