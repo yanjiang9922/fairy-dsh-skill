@@ -174,6 +174,7 @@ window.__ModuleLoader__.load({
         const isDsh022 = () => typeof document !== 'undefined' && Boolean(
           document.querySelector('[data-lexical-editor="true"]'),
         );
+        try { globalThis.__DSH_FAIRY_IS_022__ = isDsh022; } catch { /* ignore */ }
         const restyleComposer = () => {
           try {
             if (isDsh022()) return;
@@ -2961,6 +2962,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			if (node?.isConnected) node.removeAttribute(name);
 		}
 		function markControls(card) {
+			if (globalThis.__DSH_FAIRY_IS_022__?.()) return () => {};
 			if (!card) return () => {};
 			const owned = [];
 			const mark = (node, name) => {
@@ -4705,6 +4707,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				updateHandle();
 			}
 			function bind() {
+				if (globalThis.__DSH_FAIRY_IS_022__?.()) return;
 				structureFrame = 0;
 				if (!enabled()) return;
 				const nextSession = sessionResolver.resolve();
