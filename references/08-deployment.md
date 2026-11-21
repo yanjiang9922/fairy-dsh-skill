@@ -18,6 +18,9 @@
 ### 硬件与语音环境要求（GPT-SoVITS）
 
 - NVIDIA GPU：**RTX 50 系（Blackwell）必须 CUDA 12.8+，torch 需 cu128 及以上版本**；旧整合包内置的 torch（cu121 等）在 50 系上无法运行。RTX 30/40 系用 torch cu121 即可；纯 CPU 可跑但合成很慢。
+- **torch 版本窗口（实测）**：`torchaudio ≥2.9` 的 `load` 强制走 torchcodec（报 `TorchCodec is required`）；`torch <2.6` 被 `transformers 4.57` 拒绝。**CPU 环境唯一同时满足且不需要 torchcodec 的组合是 torch 2.6.0 + torchaudio 2.6.0**。GPU（cu128）环境同理按 2.6.x 基线选配套版本。
+- **pyopenjtalk（Windows）**：无官方 wheel，需本地编译：VS Build Tools + Windows SDK 10.0.26100；若 vcvars 未带 SDK 的 bin/Lib/Include，需手动补齐后再 pip install。
+- **pnpm 三约束（profile 安装时）**：① profile 需加 `ignoreWorkspaceRootCheck`（否则 `plugin_manager install_bundle` 报 `ERR_PNPM_ADDING_TO_ROOT`）；② 需与 DSH 共用默认 store（否则 `ERR_PNPM_UNEXPECTED_STORE`）；③ 换 store 后要 `--force` 重装才真正切换。
 - 第三方「一键整合包」来源不明，不建议安装；建议从 GPT-SoVITS 官方仓库源码安装，torch + 模型约 6–8 GB 磁盘。
 - **依赖组合以本仓库 `assets/gpt-sovits-runtime/requirements.txt` 为准**（librosa 0.10.2 / ffmpeg-python / av 系，**不含 torchcodec**）。原机实测：GPT-SoVITS v5 代码 + 该依赖清单可正常推理。
 - **torchcodec 坑（Windows 常见）**：若安装流程引入了 torchcodec，其未签名的 `libtorchcodec_core9.dll` 会被 Windows 智能应用控制（Smart App Control）拦截，报 `WinError 4551`。解决：`pip uninstall torchcodec -y`（音频加载自动回退 librosa/ffmpeg），或按上述 requirements 重装依赖。**不要**为此关闭 Smart App Control（关闭不可逆，需重装系统才能再启用）。
@@ -34,13 +37,29 @@
   config: { preference: dark, fontSize: 17 }
 
 # Fairy 插件套件（全部 inject: [clientModules]）
+# 注意：必须用「块状写法」（id/name 各占一行）。
+# dshmarket 的识别是逐行正则，流式写法 `- { id: xxx, name: yyy }`
+# 会被漏判 → 给每个包挂 client-only shim → 同一模块出现多个 Loader 源
+# → 报 `resolves from multiple active Loader sources`，客户端模块加载失败。
 - insert:
-    - { id: balance-meter,   name: dsh-balance-meter,   inject: [clientModules] }
-    - { id: browser-dock,    name: dsh-browser-dock,    inject: [clientModules] }
-    - { id: fairy-startup,   name: dsh-fairy-startup,   inject: [clientModules] }
-    - { id: fairy-idle,      name: dsh-fairy-idle,      inject: [clientModules] }
-    - { id: fairy-voice,     name: dsh-fairy-voice,     inject: [clientModules] }
-    - { id: fairy-visual,    name: dsh-fairy-visual,    inject: [clientModules] }
+    - id: balance-meter
+      name: dsh-balance-meter
+      inject: [clientModules]
+    - id: browser-dock
+      name: dsh-browser-dock
+      inject: [clientModules]
+    - id: fairy-startup
+      name: dsh-fairy-startup
+      inject: [clientModules]
+    - id: fairy-idle
+      name: dsh-fairy-idle
+      inject: [clientModules]
+    - id: fairy-voice
+      name: dsh-fairy-voice
+      inject: [clientModules]
+    - id: fairy-visual
+      name: dsh-fairy-visual
+      inject: [clientModules]
 
 # Playwright MCP（browser-dock 的代理）
 - insert:

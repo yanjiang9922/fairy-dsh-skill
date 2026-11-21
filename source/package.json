@@ -16,6 +16,7 @@
     "dsh-balance-meter": "workspace:*",
     "dsh-browser-dock": "workspace:*",
     "dsh-fairy-contracts": "workspace:*",
+    "dsh-fairy-idle": "workspace:*",
     "dsh-fairy-startup": "workspace:*",
     "dsh-fairy-visual": "workspace:*",
     "dsh-fairy-voice": "workspace:*"

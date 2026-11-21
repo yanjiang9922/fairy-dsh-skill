@@ -2,6 +2,7 @@ packages:
   - 'fairy-contracts'
   - 'balance-meter/dsh-balance-meter'
   - 'browser-dock/dsh-browser-dock'
+  - 'fairy-idle/dsh-fairy-idle'
   - 'fairy-startup/dsh-fairy-startup'
   - 'fairy-visual/dsh-fairy-visual'
   - 'fairy-voice/dsh-fairy-voice'
