@@ -8446,7 +8446,7 @@ html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-mascot
 				let startTimer = 0;
 				let audioCleanup = null;
 				const hour = (/* @__PURE__ */ new Date()).getHours();
-				const dayGreeting = hour >= 5 && hour < 11 ? "\u65E9\u4E0A\u597D" : hour >= 11 && hour < 18 ? "\u4E2D\u5348\u597D" : "\u665A\u4E0A\u597D";
+				const dayGreeting = hour >= 5 && hour < 11 ? "\u65E9\u4E0A\u597D" : hour >= 11 && hour < 13 ? "\u4E2D\u5348\u597D" : hour >= 13 && hour < 18 ? "\u4E0B\u5348\u597D" : "\u665A\u4E0A\u597D";
 				const fallbackIntroText = "我是三型总序式集成泛用人工智能，您可以称呼我为 Fairy。根据您签署的用户协议，我将在所有环节上，辅佐您，协助您。完成自己的工作，很高兴为您服务。主人。";
 				const dayText = `${dayGreeting}\uFF0C\u4E3B\u4EBA\u3002`;
 				const fallbackStartupVoice = {
