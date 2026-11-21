@@ -175,6 +175,43 @@ window.__ModuleLoader__.load({
           document.querySelector('[data-lexical-editor="true"]'),
         );
         try { globalThis.__DSH_FAIRY_IS_022__ = isDsh022; } catch { /* ignore */ }
+        /* Self-healing cleanup for 0.2.2: regardless of which legacy code path
+         * (dock sync, resize controller, marker projection) managed to run
+         * before the gate saw the Lexical editor, strip every composer marker,
+         * seat geometry inline style, material layer and capsule back off so
+         * the native 0.2.2 composer always wins. Runs on the existing 400ms
+         * interval and only acts when 0.2.2 is detected. */
+        const DS_022_CLEANUP_ATTRS = [
+          "data-dsh-fairy-composer-dock", "data-dsh-fairy-composer-row",
+          "data-dsh-fairy-composer-tools", "data-dsh-fairy-composer-trailing",
+          "data-dsh-fairy-composer-accessory", "data-dsh-fairy-composer-attachments",
+          "data-dsh-fairy-composer-attachments-active", "data-dsh-fairy-composer-bar-root",
+          "data-dsh-fairy-composer-bar-host", "data-dsh-fairy-composer-stack",
+          "data-dsh-fairy-composer-workspace", "data-dsh-fairy-composer-chrome",
+          "data-dsh-fairy-composer-send-control", "data-dsh-fairy-composer-context-control",
+          "data-dsh-fairy-composer-output-control", "data-dsh-fairy-composer-voice-control",
+          "data-dsh-fairy-composer-model-control", "data-dsh-fairy-composer-native-model-control",
+          "data-dsh-fairy-composer-reasoning-control", "data-dsh-fairy-composer-command-control",
+          "data-dsh-fairy-composer-access-control", "data-dsh-fairy-composer-workspace-control",
+          "data-dsh-fairy-composer-mode-control", "data-dsh-fairy-model-menu-open"
+        ];
+        const cleanDsh022Composer = () => {
+          try {
+            if (!isDsh022()) return;
+            const seat = document.querySelector('[data-composer-seat]');
+            if (!seat) return;
+            DS_022_CLEANUP_ATTRS.forEach((name) => {
+              seat.querySelectorAll(`[${name}]`).forEach((node) => node.removeAttribute(name));
+            });
+            ["left", "width", "height", "bottom", "top", "position", "z-index", "--dsh-fairy-composer-height"].forEach((prop) => {
+              seat.style.removeProperty(prop);
+            });
+            document.querySelectorAll('[data-dsh-fairy-composer-material="true"]').forEach((node) => node.remove());
+            document.querySelectorAll('[data-dsh-fairy-mascot-scale-base="true"], [data-dsh-fairy-mascot-animation-speed-base="true"]').forEach((node) => node.remove());
+            const handle = document.querySelector('.dsh-fairy-composer-resizer');
+            if (handle) handle.remove();
+          } catch { /* ignore */ }
+        };
         const restyleComposer = () => {
           try {
             if (isDsh022()) return;
@@ -996,7 +1033,7 @@ window.__ModuleLoader__.load({
         if (window.__dshFairyChromeTimer) {
           try { clearInterval(window.__dshFairyChromeTimer); } catch (error) { /* ignore */ }
         }
-        window.__dshFairyChromeTimer = window.setInterval(() => { restyleComposer(); placeVoiceBar(); }, 400);
+        window.__dshFairyChromeTimer = window.setInterval(() => { restyleComposer(); placeVoiceBar(); cleanDsh022Composer(); }, 400);
         window.setTimeout(placeVoiceBar, 1600);
 
         /* Right-hand voice bar: one compact waveform that doubles as the
@@ -3855,6 +3892,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				handle.setAttribute("aria-valuenow", String(Math.round(getRenderedHeight())));
 			};
 			const updateHeight = (next, persist = false) => {
+				if (globalThis.__DSH_FAIRY_IS_022__?.()) return;
 				const height = clamp(next, HEIGHT_MIN, maxHeight());
 				setHeight(height);
 				const seat = getSeat();
