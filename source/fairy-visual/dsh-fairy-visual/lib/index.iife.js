@@ -4445,6 +4445,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			};
 			const renderedHeight = () => attachmentDockHeight(height, attachmentRailHeight(attachmentSlot(card)), HEIGHT_MIN, maximumDockHeight());
 			const schedule = () => {
+				if (globalThis.__DSH_FAIRY_IS_022__?.()) return;
 				if (!frame && !disposed) frame = domObserverManager.scheduleFrame(layoutFrameKey, sync);
 			};
 			const scheduleStructure = () => {
