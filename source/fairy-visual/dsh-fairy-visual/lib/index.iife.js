@@ -165,8 +165,18 @@ window.__ModuleLoader__.load({
         const force = (el, prop, value) => {
           if (el && el.style) el.style.setProperty(prop, value, 'important');
         };
+        /* DSH 0.2.2 gate: 0.2.2 replaced the composer editor with a Lexical
+         * contenteditable. The geometry forcing below breaks its native
+         * two-row grid (attachments cover the editor, pasted images break
+         * focus, model selector collapses to 0x28). On 0.2.2 keep the native
+         * composer; HDD theme, mascot, sounds and startup animation are
+         * unaffected (they live outside this chrome function). */
+        const isDsh022 = () => typeof document !== 'undefined' && Boolean(
+          document.querySelector('[data-lexical-editor="true"]'),
+        );
         const restyleComposer = () => {
           try {
+            if (isDsh022()) return;
             const input = document.querySelector('[contenteditable="true"], textarea');
             if (!input) return;
             let card = input;
@@ -897,6 +907,7 @@ window.__ModuleLoader__.load({
         let lastGeom = '';
         const placeVoiceBar = () => {
           try {
+            if (isDsh022()) return;
             const bar = document.getElementById('dsh-fairy-voicebar');
             const rail = document.getElementById('dsh-composer-rail');
             const stackEl = document.querySelector('[class*="composerStack"]');
