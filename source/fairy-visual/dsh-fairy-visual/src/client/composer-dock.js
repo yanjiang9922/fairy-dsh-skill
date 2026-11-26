@@ -67,6 +67,12 @@ function clearMarkerTree(root, name) {
   root?.querySelectorAll?.(`[${name}]`).forEach((node) => clearMarker(node, name));
 }
 
+function ensureComposerOwnership(node) {
+  if (!node?.isConnected || node.getAttribute(COMPOSER_ATTR) === 'true') return false;
+  node.setAttribute(COMPOSER_ATTR, 'true');
+  return true;
+}
+
 // Lifecycle: composer dock
 // Owner: document
 // Contract: lifecycle-ownership.json#owners[subsystem=composer dock]
@@ -79,7 +85,6 @@ function mountComposerDock(controller) {
   let structureFrame = 0;
   let observer = null;
   let headerObserver = null;
-  let resizeObserver = null;
   let conversation = null;
   let surface = null;
   let observedHeaderActions = null;
@@ -175,6 +180,10 @@ function mountComposerDock(controller) {
     const layer = ensureMaterialLayer();
     syncMaterialLayerModule(layer, inputScroll(card), [attachmentRail(attachmentSlot(card))]);
   };
+  const setPixelStyle = (element, property, value) => {
+    const next = `${Math.round(value)}px`;
+    if (element.style.getPropertyValue(property) !== next) element.style.setProperty(property, next);
+  };
 
   const restoreSeat = ({ clearWorkspaceTemplate = false } = {}) => {
     contentAnchor.clear();
@@ -187,8 +196,6 @@ function mountComposerDock(controller) {
     // Disabling HDD or replacing the official seat must release the observer
     // before dropping the surface reference. Otherwise a detached surface can
     // keep the dock lifecycle alive and continue scheduling layout work.
-    resizeObserver?.disconnect();
-    resizeObserver = null;
     conversation = null;
     surface = null;
     if (clearWorkspaceTemplate) workspaceTemplate = null;
@@ -334,6 +341,7 @@ function mountComposerDock(controller) {
       contentAnchor.clear();
       return;
     }
+    const ownershipRestored = ensureComposerOwnership(currentSeat);
     if (currentConversation !== conversation || currentSeat !== seat) {
       restoreSeat();
       conversation = currentConversation;
@@ -361,6 +369,12 @@ function mountComposerDock(controller) {
       card = currentCard;
       removeLegacyVoiceDensityMarker();
       clearControls = placeNativeControlMarkers(card);
+    } else if (ownershipRestored) {
+      // The host can reconcile the native seat without replacing the node and
+      // strip only Fairy's data attribute. Restore it before paint so the
+      // native card never falls back to its narrower three-column geometry.
+      clearControls();
+      clearControls = placeNativeControlMarkers(card);
     }
     removeLegacyMascotScaleControl();
     ensureMascotScaleBase();
@@ -371,14 +385,7 @@ function mountComposerDock(controller) {
     ensureWorkspaceProjection(stack, workspaceRow);
     syncReasoningMenuLayer();
     const currentSurface = resolvedSession.surface;
-    if (currentSurface !== surface) {
-      resizeObserver?.disconnect();
-      surface = currentSurface;
-      if (surface && typeof ResizeObserver === 'function') {
-        resizeObserver = new ResizeObserver(schedule);
-        resizeObserver.observe(surface);
-      }
-    }
+    surface = currentSurface;
     const rect = surface?.getBoundingClientRect();
     if (!rect || rect.width < 1 || rect.height < 1) return;
     // The resize controller owns the live drag state. The persisted setting is
@@ -386,11 +393,11 @@ function mountComposerDock(controller) {
     // overwrite every pointer move on the next RAF.
     if (!resizeController.dragging) height = readHeight();
     if (!resizeController.dragging && pendingPersistedHeight !== null) height = pendingPersistedHeight;
-    seat.style.setProperty('left', `${Math.round(rect.left)}px`);
-    seat.style.setProperty('width', `${Math.round(rect.width)}px`);
+    setPixelStyle(seat, 'left', rect.left);
+    setPixelStyle(seat, 'width', rect.width);
     const displayHeight = renderedHeight();
-    seat.style.setProperty('height', `${Math.round(displayHeight)}px`);
-    seat.style.setProperty('--dsh-fairy-composer-height', `${Math.round(displayHeight)}px`);
+    setPixelStyle(seat, 'height', displayHeight);
+    setPixelStyle(seat, '--dsh-fairy-composer-height', displayHeight);
     syncMaterialLayer();
     insetSynchronizer.flush();
     contentAnchor.flush();
@@ -404,14 +411,10 @@ function mountComposerDock(controller) {
     const nextSession = sessionResolver.resolve();
     const nextConversation = nextSession.conversation;
     const nextSurface = nextSession.surface;
+    ensureComposerOwnership(nextSession.seat);
     if (nextConversation !== conversation || nextSurface !== surface) {
-      resizeObserver?.disconnect();
       conversation = nextConversation;
       surface = nextSurface;
-      if (conversation && typeof ResizeObserver === 'function') {
-        resizeObserver = new ResizeObserver(schedule);
-        if (surface) resizeObserver.observe(surface);
-      }
     }
     bindHeaderObserver();
     if (seat && card) {
@@ -445,13 +448,24 @@ function mountComposerDock(controller) {
         return [...record.addedNodes, ...record.removedNodes].some((node) => node.nodeType === 1
           && (node.matches?.(`[${OFFICIAL_ATTRIBUTES.composerSeat}]`) || node.querySelector?.(`[${OFFICIAL_ATTRIBUTES.composerSeat}]`)));
       }
-      return record.attributeName === OFFICIAL_ATTRIBUTES.phase || record.attributeName === OFFICIAL_ATTRIBUTES.composerSeat || record.attributeName === OFFICIAL_ATTRIBUTES.slot || record.attributeName === 'aria-expanded';
+      return record.attributeName === OFFICIAL_ATTRIBUTES.phase
+        || record.attributeName === OFFICIAL_ATTRIBUTES.composerSeat
+        || record.attributeName === OFFICIAL_ATTRIBUTES.slot
+        || record.attributeName === 'aria-expanded'
+        // A confirmation card can replace enough of the composer subtree that
+        // React restores the native seat without another structural mutation.
+        // Re-bind when Fairy's ownership marker disappears so the old inline
+        // fallback styles cannot leave a detached, clipped composer frame.
+        || (record.attributeName === COMPOSER_ATTR && record.target?.getAttribute?.(COMPOSER_ATTR) !== 'true');
     };
-    if (records.some((record) => headerPresetChanged(record) || composerStructureChanged(record))) scheduleStructure();
+    const ownershipRestored = records.some((record) => record.attributeName === COMPOSER_ATTR
+      && record.target === seat
+      && ensureComposerOwnership(seat));
+    if (ownershipRestored || records.some((record) => headerPresetChanged(record) || composerStructureChanged(record))) scheduleStructure();
     if (records.some((record) => record.attributeName === 'aria-expanded' || record.type === 'childList')) syncReasoningMenuLayer();
   });
   observer = mutationObserver;
-  mutationObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: [OFFICIAL_ATTRIBUTES.phase, OFFICIAL_ATTRIBUTES.composerSeat, OFFICIAL_ATTRIBUTES.slot, 'aria-expanded'] });
+  mutationObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: [OFFICIAL_ATTRIBUTES.phase, OFFICIAL_ATTRIBUTES.composerSeat, OFFICIAL_ATTRIBUTES.slot, 'aria-expanded', COMPOSER_ATTR] });
   headerObserver = createManagedMutationObserver(scheduleStructure);
   lifecycle.add(() => mutationObserver.disconnect(), 'composer-dock:structure-observer');
   window.addEventListener('resize', schedule, { passive: true });
@@ -464,6 +478,22 @@ function mountComposerDock(controller) {
     schedule();
   });
   bind();
+  // Some native rerenders restore the seat in place without emitting a record
+  // that survives the transition frame. This watchdog only schedules a bind
+  // when ownership is actually missing, so stable layouts write nothing.
+  const bindingWatchdog = window.setInterval(() => {
+    if (!enabled() || disposed) return;
+    const resolved = sessionResolver.resolve();
+    if (!resolved.conversation || !resolved.seat || !resolved.card) return;
+    if (resolved.conversation !== conversation
+      || resolved.seat !== seat
+      || resolved.card !== card
+      || resolved.seat.getAttribute(COMPOSER_ATTR) !== 'true') {
+      ensureComposerOwnership(resolved.seat);
+      scheduleStructure();
+    }
+  }, 300);
+  lifecycle.add(() => window.clearInterval(bindingWatchdog), 'composer-dock:binding-watchdog');
 
   const cleanup = () => {
     disposed = true;
@@ -472,7 +502,6 @@ function mountComposerDock(controller) {
     observer?.disconnect();
     headerObserver?.disconnect();
     observedHeaderActions = null;
-    resizeObserver?.disconnect();
     off?.();
     window.removeEventListener('resize', schedule);
     window.visualViewport?.removeEventListener('resize', schedule);

@@ -181,168 +181,147 @@ window.__ModuleLoader__.load({
             const cardFrame = card.closest('[class*="_card"]') || card.parentElement;
             if (!cardFrame || cardFrame === document.body) return;
             const stackEl0 = input.closest('[class*="composerStack"]');
-            if (stackEl0 && stackEl0 !== document.body) {
-              let stage = stackEl0.parentElement;
-              while (stage && stage !== document.body && stage.getBoundingClientRect().width < 500) {
-                stage = stage.parentElement;
-              }
-              const stageWidth = stage && stage !== document.body
-                ? stage.getBoundingClientRect().width
-                : stackEl0.getBoundingClientRect().width + 32;
-              const stackWidth = Math.max(720, Math.round(stageWidth));
-              force(stackEl0, 'width', stackWidth + 'px');
-              force(stackEl0, 'max-width', 'none');
-              force(stackEl0, 'box-sizing', 'border-box');
-              force(stackEl0, 'border', '1px solid rgba(255,255,255,.07)');
-              force(stackEl0, 'border-radius', '14px');
-              force(stackEl0, 'background', 'rgba(12,16,24,.58)');
-              force(stackEl0, 'padding', '10px 12px');
-              force(stackEl0, 'backdrop-filter', 'blur(14px)');
-              force(stackEl0, 'box-shadow', '0 18px 50px rgba(0,0,0,.45)');
-              const composerFrame = cardFrame.parentElement;
-              if (composerFrame) {
-                force(composerFrame, 'width', Math.max(420, stackWidth - 320) + 'px');
-                force(composerFrame, 'min-width', '0');
-                force(composerFrame, 'max-width', 'none');
-                force(composerFrame, 'margin-left', 'auto');
-                force(composerFrame, 'margin-right', 'auto');
-              }
-            }
+            const fairyDockOwnsComposer = Boolean(cardFrame.closest?.('[data-dsh-fairy-composer-dock="true"]'));
+            /* DSH and the visual dock own the composer width. Measuring the
+             * live stack here and writing a width back created a two-state
+             * feedback loop whenever a confirmation card appeared. */
             /* DSH still renders a three-column utility grid. Collapse it into
              * one real card and move the native controls to the two bottom
              * corners from the reference. */
-            force(cardFrame, 'position', 'relative');
-            force(cardFrame, 'display', 'block');
-            force(cardFrame, 'width', '100%');
-            force(cardFrame, 'height', '132px');
-            force(cardFrame, 'min-width', '0');
-            force(cardFrame, 'padding', '0');
-            force(cardFrame, 'overflow', 'visible');
-            force(cardFrame, 'border-radius', '18px');
-            const lightComposer = document.documentElement.getAttribute('data-dsh-fairy-theme') === 'light';
-            const frameFill = lightComposer ? '#f7fafc' : '#090b16';
-            const frameEdge = lightComposer
-              ? 'linear-gradient(135deg,#dfe5e9 0%,#dce2e6 48%,#c1c8ce 100%)'
-              : 'linear-gradient(135deg,#555f68 0%,#4e5861 48%,#3d444b 100%)';
-            force(cardFrame, 'background', `linear-gradient(${frameFill},${frameFill}) padding-box,${frameEdge} border-box`);
-            force(cardFrame, 'border', '2px solid transparent');
-            force(cardFrame, 'box-shadow', lightComposer
-              ? '0 0 0 1px rgba(52,63,73,.12), 0 10px 28px -18px rgba(52,63,73,.28)'
-              : '0 0 0 1px rgba(0,0,0,.28), 0 10px 28px -18px rgba(0,0,0,.78)');
-            force(card, 'position', 'absolute');
-            force(card, 'inset', '2px');
-            force(card, 'width', 'auto');
-            force(card, 'height', 'auto');
-            force(card, 'min-width', '0');
-            force(card, 'padding', '14px 16px 10px');
-            force(card, 'border-radius', '16px');
-            force(card, 'background', 'rgba(9,11,22,.94)');
-            force(card, 'border', '0');
-            force(card, 'box-shadow', 'none');
-            force(card, 'backdrop-filter', 'blur(18px)');
-            force(card, 'background-color', 'rgba(9,11,22,.94)');
-            const gridAlpha = Math.min(0.035, Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dsh-hdd-grid')) || 0.035);
-            force(card, 'background-image', 'repeating-linear-gradient(0deg, rgba(92,130,210,' + gridAlpha + ') 0 1px, transparent 1px 32px), repeating-linear-gradient(90deg, rgba(92,130,210,' + gridAlpha + ') 0 1px, transparent 1px 32px)');
-            cardFrame.querySelectorAll(':scope > span').forEach((el) => {
-              if (el.matches('[data-dsh-fairy-composer-voice-control="true"], [data-dsh-fairy-mascot-scale-base="true"], [data-dsh-fairy-mascot-animation-speed-base="true"]')) return;
-              force(el, 'display', 'none');
-            });
-
-            /* The sound plugin's inline toggle/slider is superseded by the
-             * right-hand bar, so hide it. */
-            if (CUSTOM_CHROME && CUSTOM_VOICE_BAR) document.querySelectorAll('.dsh-fairy-voice-controls').forEach((el) => force(el, 'display', 'none'));
-            /* Token/speed badges do not exist in the reference layout. */
-            /* Hide the composer token/speed badges only. A bare
-             * [class*="pill"] would also hide every settings entry that uses
-             * the same class fragment. */
-            document.querySelectorAll('[class*="_6RMz1a_"], [class*="ueqFMa_"]').forEach((el) => force(el, 'display', 'none'));
-
-            cardFrame.querySelectorAll('button').forEach((button) => {
-              const label = button.getAttribute('aria-label') || '';
-              if (/发送|停止生成|send/i.test(label)) {
-                force(button, 'border-radius', '999px');
-                force(button, 'position', 'absolute');
-                force(button, 'right', '14px');
-                force(button, 'bottom', '14px');
-                force(button, 'z-index', '3');
-                force(button, 'width', '40px');
-                force(button, 'height', '40px');
-                force(button, 'min-width', '40px');
-                force(button, 'max-width', '40px');
-                force(button, 'min-height', '40px');
-                force(button, 'max-height', '40px');
-                force(button, 'opacity', '1');
-                force(button, 'zoom', '1');
-                force(button, 'background', 'linear-gradient(135deg,#3b7bff,#8b5cf6)');
-                force(button, 'color', '#ffffff');
-                force(button, 'box-shadow', '0 0 20px rgba(96,140,255,.6)');
-              } else if (/添加|附件|attach/i.test(label)) {
-                force(button, 'position', 'absolute');
-                force(button, 'left', '14px');
-                force(button, 'bottom', '16px');
-                force(button, 'z-index', '3');
-                force(button, 'width', '32px');
-                force(button, 'height', '32px');
-                force(button, 'border-radius', '999px');
-                force(button, 'background', 'rgba(255,255,255,.05)');
-                force(button, 'border', '1px solid rgba(255,255,255,.1)');
-              } else if (/访问模式|permission|权限/i.test(label)) {
-                force(button, 'display', 'none');
-              }
-            });
-            /* Model picker sits beside Add and keeps its reasoning effort
-             * visible as a compact chip. */
-            const modelButton = document.querySelector('[aria-label*="选择模型"]');
-            if (modelButton) {
-              const modelRoot = modelButton.parentElement;
-              if (modelRoot) {
-                force(modelRoot, 'display', 'block');
-                force(modelRoot, 'position', 'static');
-                force(modelRoot, 'width', '0');
-                force(modelRoot, 'height', '0');
-              }
-              modelButton.querySelectorAll('span').forEach((el) => {
-                const text = (el.textContent || '').trim();
-                if (/^\d{2,5}$/.test(text)) force(el, 'display', 'none');
+            if (!fairyDockOwnsComposer) {
+              force(cardFrame, 'position', 'relative');
+              force(cardFrame, 'display', 'block');
+              force(cardFrame, 'width', '100%');
+              force(cardFrame, 'height', '132px');
+              force(cardFrame, 'min-width', '0');
+              force(cardFrame, 'padding', '0');
+              force(cardFrame, 'overflow', 'visible');
+              force(cardFrame, 'border-radius', '18px');
+              const lightComposer = document.documentElement.getAttribute('data-dsh-fairy-theme') === 'light';
+              const frameFill = lightComposer ? '#f7fafc' : '#090b16';
+              const frameEdge = lightComposer
+                ? 'linear-gradient(135deg,#dfe5e9 0%,#dce2e6 48%,#c1c8ce 100%)'
+                : 'linear-gradient(135deg,#555f68 0%,#4e5861 48%,#3d444b 100%)';
+              force(cardFrame, 'background', `linear-gradient(${frameFill},${frameFill}) padding-box,${frameEdge} border-box`);
+              force(cardFrame, 'border', '2px solid transparent');
+              force(cardFrame, 'box-shadow', lightComposer
+                ? '0 0 0 1px rgba(52,63,73,.12), 0 10px 28px -18px rgba(52,63,73,.28)'
+                : '0 0 0 1px rgba(0,0,0,.28), 0 10px 28px -18px rgba(0,0,0,.78)');
+              force(card, 'position', 'absolute');
+              force(card, 'inset', '2px');
+              force(card, 'width', 'auto');
+              force(card, 'height', 'auto');
+              force(card, 'min-width', '0');
+              force(card, 'padding', '14px 16px 10px');
+              force(card, 'border-radius', '16px');
+              force(card, 'background', 'rgba(9,11,22,.94)');
+              force(card, 'border', '0');
+              force(card, 'box-shadow', 'none');
+              force(card, 'backdrop-filter', 'blur(18px)');
+              force(card, 'background-color', 'rgba(9,11,22,.94)');
+              const gridAlpha = Math.min(0.035, Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dsh-hdd-grid')) || 0.035);
+              force(card, 'background-image', 'repeating-linear-gradient(0deg, rgba(92,130,210,' + gridAlpha + ') 0 1px, transparent 1px 32px), repeating-linear-gradient(90deg, rgba(92,130,210,' + gridAlpha + ') 0 1px, transparent 1px 32px)');
+              cardFrame.querySelectorAll(':scope > span').forEach((el) => {
+                if (el.matches('[data-dsh-fairy-composer-voice-control="true"], [data-dsh-fairy-mascot-scale-base="true"], [data-dsh-fairy-mascot-animation-speed-base="true"]')) return;
+                force(el, 'display', 'none');
               });
-              modelButton.querySelectorAll('.ofTiQG_triggerLabel, .ofTiQG_triggerLabel span').forEach((el) => {
-                if (!el.classList.contains('_tag_brmue_4')) force(el, 'display', el.hasAttribute('data-slot') ? 'contents' : 'inline');
+
+              /* The sound plugin's inline toggle/slider is superseded by the
+               * right-hand bar, so hide it. */
+              if (CUSTOM_CHROME && CUSTOM_VOICE_BAR) document.querySelectorAll('.dsh-fairy-voice-controls').forEach((el) => force(el, 'display', 'none'));
+              /* Token/speed badges do not exist in the reference layout. */
+              /* Hide the composer token/speed badges only. A bare
+               * [class*="pill"] would also hide every settings entry that uses
+               * the same class fragment. */
+              document.querySelectorAll('[class*="_6RMz1a_"], [class*="ueqFMa_"]').forEach((el) => force(el, 'display', 'none'));
+
+              cardFrame.querySelectorAll('button').forEach((button) => {
+                const label = button.getAttribute('aria-label') || '';
+                if (/发送|停止生成|send/i.test(label)) {
+                  force(button, 'border-radius', '999px');
+                  force(button, 'position', 'absolute');
+                  force(button, 'right', '14px');
+                  force(button, 'bottom', '14px');
+                  force(button, 'z-index', '3');
+                  force(button, 'width', '40px');
+                  force(button, 'height', '40px');
+                  force(button, 'min-width', '40px');
+                  force(button, 'max-width', '40px');
+                  force(button, 'min-height', '40px');
+                  force(button, 'max-height', '40px');
+                  force(button, 'opacity', '1');
+                  force(button, 'zoom', '1');
+                  force(button, 'background', 'linear-gradient(135deg,#3b7bff,#8b5cf6)');
+                  force(button, 'color', '#ffffff');
+                  force(button, 'box-shadow', '0 0 20px rgba(96,140,255,.6)');
+                } else if (/添加|附件|attach/i.test(label)) {
+                  force(button, 'position', 'absolute');
+                  force(button, 'left', '14px');
+                  force(button, 'bottom', '16px');
+                  force(button, 'z-index', '3');
+                  force(button, 'width', '32px');
+                  force(button, 'height', '32px');
+                  force(button, 'border-radius', '999px');
+                  force(button, 'background', 'rgba(255,255,255,.05)');
+                  force(button, 'border', '1px solid rgba(255,255,255,.1)');
+                } else if (/访问模式|permission|权限/i.test(label)) {
+                  force(button, 'display', 'none');
+                }
               });
-              const modelEffort = modelButton.querySelector('.ofTiQG_triggerEffort');
-              if (modelEffort) {
-                force(modelEffort, 'display', 'inline-flex');
-                force(modelEffort, 'align-items', 'center');
-                force(modelEffort, 'height', '18px');
-                force(modelEffort, 'padding', '0 6px');
-                force(modelEffort, 'margin-left', '5px');
-                force(modelEffort, 'border', '1px solid rgba(126,220,255,.24)');
-                force(modelEffort, 'border-radius', '999px');
-                force(modelEffort, 'background', 'rgba(126,220,255,.08)');
-                force(modelEffort, 'color', '#a9c7dd');
-                force(modelEffort, 'font-size', '10px');
-                force(modelEffort, 'font-weight', '600');
-                force(modelEffort, 'line-height', '1');
-                force(modelEffort, 'letter-spacing', '.02em');
+              /* Model picker sits beside Add and keeps its reasoning effort
+               * visible as a compact chip. */
+              const modelButton = document.querySelector('[aria-label*="选择模型"]');
+              if (modelButton) {
+                const modelRoot = modelButton.parentElement;
+                if (modelRoot) {
+                  force(modelRoot, 'display', 'block');
+                  force(modelRoot, 'position', 'static');
+                  force(modelRoot, 'width', '0');
+                  force(modelRoot, 'height', '0');
+                }
+                modelButton.querySelectorAll('span').forEach((el) => {
+                  const text = (el.textContent || '').trim();
+                  if (/^\d{2,5}$/.test(text)) force(el, 'display', 'none');
+                });
+                modelButton.querySelectorAll('.ofTiQG_triggerLabel, .ofTiQG_triggerLabel span').forEach((el) => {
+                  if (!el.classList.contains('_tag_brmue_4')) force(el, 'display', el.hasAttribute('data-slot') ? 'contents' : 'inline');
+                });
+                const modelEffort = modelButton.querySelector('.ofTiQG_triggerEffort');
+                if (modelEffort) {
+                  force(modelEffort, 'display', 'inline-flex');
+                  force(modelEffort, 'align-items', 'center');
+                  force(modelEffort, 'height', '18px');
+                  force(modelEffort, 'padding', '0 6px');
+                  force(modelEffort, 'margin-left', '5px');
+                  force(modelEffort, 'border', '1px solid rgba(126,220,255,.24)');
+                  force(modelEffort, 'border-radius', '999px');
+                  force(modelEffort, 'background', 'rgba(126,220,255,.08)');
+                  force(modelEffort, 'color', '#a9c7dd');
+                  force(modelEffort, 'font-size', '10px');
+                  force(modelEffort, 'font-weight', '600');
+                  force(modelEffort, 'line-height', '1');
+                  force(modelEffort, 'letter-spacing', '.02em');
+                }
+                modelButton.querySelectorAll('svg:not(.ofTiQG_chevron)').forEach((el) => force(el, 'display', 'none'));
+                const modelChevron = modelButton.querySelector('.ofTiQG_chevron');
+                if (modelChevron) force(modelChevron, 'display', 'block');
+                force(modelButton, 'position', 'absolute');
+                force(modelButton, 'left', 'auto');
+                force(modelButton, 'right', '64px');
+                force(modelButton, 'bottom', '22px');
+                force(modelButton, 'z-index', '3');
+                force(modelButton, 'display', window.innerWidth <= 620 ? 'none' : 'flex');
+                force(modelButton, 'align-items', 'center');
+                force(modelButton, 'gap', '5px');
+                force(modelButton, 'width', 'auto');
+                force(modelButton, 'max-width', 'calc(100% - 270px)');
+                force(modelButton, 'height', '28px');
+                force(modelButton, 'padding', '0');
+                force(modelButton, 'white-space', 'nowrap');
+                force(modelButton, 'background', 'transparent');
+                force(modelButton, 'border', 'none');
+                force(modelButton, 'color', '#8fa2b6');
               }
-              modelButton.querySelectorAll('svg:not(.ofTiQG_chevron)').forEach((el) => force(el, 'display', 'none'));
-              const modelChevron = modelButton.querySelector('.ofTiQG_chevron');
-              if (modelChevron) force(modelChevron, 'display', 'block');
-              force(modelButton, 'position', 'absolute');
-              force(modelButton, 'left', 'auto');
-              force(modelButton, 'right', '64px');
-              force(modelButton, 'bottom', '22px');
-              force(modelButton, 'z-index', '3');
-              force(modelButton, 'display', window.innerWidth <= 620 ? 'none' : 'flex');
-              force(modelButton, 'align-items', 'center');
-              force(modelButton, 'gap', '5px');
-              force(modelButton, 'width', 'auto');
-              force(modelButton, 'max-width', 'calc(100% - 270px)');
-              force(modelButton, 'height', '28px');
-              force(modelButton, 'padding', '0');
-              force(modelButton, 'white-space', 'nowrap');
-              force(modelButton, 'background', 'transparent');
-              force(modelButton, 'border', 'none');
-              force(modelButton, 'color', '#8fa2b6');
             }
 
             /* permission chip: move it out of the input row into the left gutter
@@ -913,8 +892,6 @@ window.__ModuleLoader__.load({
             const cardBox = card && card !== document.body ? card.getBoundingClientRect() : null;
             const frame = document.querySelector('[data-composer-card="true"]');
             const frameBox = frame?.getBoundingClientRect() || cardBox;
-            const controlColumn = document.querySelector('[data-dsh-fairy-mascot-scale-base="true"]');
-            const controlBox = controlColumn?.getBoundingClientRect();
             if (!box.height || !cardBox?.height || !frameBox?.height) return;
             const geom = [
               Math.round(box.left),
@@ -923,18 +900,29 @@ window.__ModuleLoader__.load({
               Math.round(box.bottom),
               Math.round(cardBox.top),
               Math.round(cardBox.height),
-              Math.round(controlBox?.left || 0),
-              Math.round(controlBox?.top || 0),
-              Math.round(controlBox?.width || 0),
-              Math.round(controlBox?.height || 0),
+              Math.round(frameBox.right),
+              Math.round(frameBox.height),
             ].join(':');
             const intact = bar && bar.isConnected && bar.style.height !== '';
             if (geom === lastGeom && intact) return;
             lastGeom = geom;
               const capsuleHeight = 28;
               const capsuleGap = (frameBox.height - capsuleHeight * 3) / 4;
-              const capsuleLeft = Math.round(controlBox?.left || (frameBox.right + 21));
-              const capsuleWidth = Math.round(controlBox?.width || 124);
+              const frameStyle = getComputedStyle(frame || card);
+              const frameBorderTop = Number.parseFloat(frameStyle.borderTopWidth) || 0;
+              const frameBorderRight = Number.parseFloat(frameStyle.borderRightWidth) || 0;
+              const framePaddingTop = Number.parseFloat(frameStyle.paddingTop) || 0;
+              const framePaddingRight = Number.parseFloat(frameStyle.paddingRight) || 0;
+              /* Anchor from the composer edge. Using the capsule's own live
+               * left value creates a feedback loop: every write moves the
+               * measuring source, so the next tick writes a more extreme
+               * position until the whole control column leaves the screen. */
+              const capsuleWidth = Math.round(Number.parseFloat(
+                frameStyle.getPropertyValue('--dsh-fairy-composer-voice-width')
+              ) || 124);
+              const capsuleLeft = Math.round(
+                frameBox.right - frameBorderRight - framePaddingRight - capsuleWidth
+              );
               const capsuleTop = (index) => (
                 frameBox.top + capsuleGap + index * (capsuleHeight + capsuleGap)
               );
@@ -957,17 +945,21 @@ window.__ModuleLoader__.load({
               ].forEach(([selector, index]) => {
                 const capsule = document.querySelector(selector);
                 if (!capsule) return;
-                const frameStyle = getComputedStyle(frameBox === cardBox ? card : frame);
-                const frameBorderTop = Number.parseFloat(frameStyle.borderTopWidth) || 0;
-                const frameBorderRight = Number.parseFloat(frameStyle.borderRightWidth) || 0;
                 force(capsule, 'position', 'absolute');
                 force(capsule, 'right', (
-                  frameBox.right - frameBorderRight - capsuleLeft - capsuleWidth
+                  frameBox.right
+                    - frameBorderRight
+                    - framePaddingRight
+                    - capsuleLeft
+                    - capsuleWidth
                 ) + 'px');
                 force(capsule, 'bottom', 'auto');
                 force(capsule, 'left', 'auto');
                 force(capsule, 'top', (
-                  capsuleTop(index) - frameBox.top - frameBorderTop
+                  capsuleTop(index)
+                    - frameBox.top
+                    - frameBorderTop
+                    - framePaddingTop
                 ) + 'px');
               });
             if (rail) {
@@ -1560,7 +1552,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 .dsh-fairy-stage{position:fixed;left:var(--dsh-fairy-left,280px);width:var(--dsh-fairy-width,calc(100vw - 280px));top:56px;height:48vh;z-index:10;pointer-events:none;display:flex;justify-content:center;align-items:flex-start;padding-top:10px;opacity:0;visibility:hidden;transform:scale(.94);transform-origin:center top;transition:opacity 280ms cubic-bezier(.7,0,.84,0),transform 340ms cubic-bezier(.7,0,.84,0),visibility 0s linear 340ms}.dsh-fairy-stage[data-visible=true]{opacity:1;visibility:visible;transform:scale(1);transition:opacity 460ms cubic-bezier(.16,1,.3,1),transform 520ms cubic-bezier(.16,1,.3,1),visibility 0s}.dsh-fairy-stage[hidden]{display:none}
 @property --dsh-fairy-mask{syntax:"<number>";inherits:false;initial-value:0}.dsh-fairy-content-mask{--dsh-fairy-mask:0;-webkit-mask-image:radial-gradient(ellipse var(--dsh-fade-rx,165px) var(--dsh-fade-ry,155px) at var(--dsh-fade-x,50%) var(--dsh-fade-y,50%),rgba(0,0,0,calc(1 - var(--dsh-fairy-mask) * .995)) 0%,rgba(0,0,0,calc(1 - var(--dsh-fairy-mask) * .995)) var(--dsh-fade-core,75%),rgba(0,0,0,calc(1 - var(--dsh-fairy-mask) * .88)) var(--dsh-fade-soft-1,82%),rgba(0,0,0,calc(1 - var(--dsh-fairy-mask) * .62)) var(--dsh-fade-soft-2,90%),rgba(0,0,0,calc(1 - var(--dsh-fairy-mask) * .28)) var(--dsh-fade-soft-3,96%),#000 100%);mask-image:radial-gradient(ellipse var(--dsh-fade-rx,165px) var(--dsh-fade-ry,155px) at var(--dsh-fade-x,50%) var(--dsh-fade-y,50%),rgba(0,0,0,calc(1 - var(--dsh-fairy-mask) * .995)) 0%,rgba(0,0,0,calc(1 - var(--dsh-fairy-mask) * .995)) var(--dsh-fade-core,75%),rgba(0,0,0,calc(1 - var(--dsh-fairy-mask) * .88)) var(--dsh-fade-soft-1,82%),rgba(0,0,0,calc(1 - var(--dsh-fairy-mask) * .62)) var(--dsh-fade-soft-2,90%),rgba(0,0,0,calc(1 - var(--dsh-fairy-mask) * .28)) var(--dsh-fade-soft-3,96%),#000 100%);transition:--dsh-fairy-mask 340ms cubic-bezier(.16,1,.3,1)}.dsh-fairy-content-fade{--dsh-fairy-mask:1}.dsh-fairy-toggle{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:1px solid var(--dsw-alias-border-l2);background:transparent;border-radius:999px;color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xs-strong-13,12px system-ui);cursor:pointer}.dsh-fairy-dot{width:8px;height:8px;border-radius:50%;background:var(--dsw-alias-label-tertiary)}.dsh-fairy-toggle[data-on=true] .dsh-fairy-dot{background:#38bdf8;box-shadow:0 0 6px #38bdf8}.dsh-fairy-mark{display:none;align-items:center;gap:10px;border:0;background:transparent;color:inherit;cursor:pointer;padding:2px}.dsh-fairy-mark[data-enabled=true]{display:inline-flex}.dsh-fairy-mark:focus-visible{outline:2px solid #f4f7fb;outline-offset:3px;border-radius:4px}.dsh-fairy-mark[data-on=true] .dsh-fairy-mark-eye{filter:grayscale(1) brightness(.55)}.dsh-fairy-mark[data-on=true] .dsh-fairy-mark-copy{opacity:.55}.dsh-fairy-mark-eye{position:relative;isolation:isolate;width:38px;height:38px;flex:none;border:2px solid #c7cfdb;border-radius:50%;background:#2d45ee;box-sizing:border-box;transform-origin:center;transition:transform 260ms cubic-bezier(.16,1,.3,1)}@media (hover:hover){.dsh-fairy-mark:hover>.dsh-fairy-mark-eye{transform:scale(1.11)}}.dsh-fairy-mark:focus-visible>.dsh-fairy-mark-eye{transform:scale(1.11)}.dsh-fairy-mark-eye:before{content:'';position:absolute;z-index:1;inset:3px;border-radius:50%;background:radial-gradient(circle at 64% 66%,#f4f7fb 0 4px,transparent 4.5px),radial-gradient(circle at 50% 50%,#080b14 0 7px,transparent 7.5px),radial-gradient(circle at 50% 50%,#c7cfdb 0 10px,transparent 10.5px),radial-gradient(circle at 50% 50%,#0b1025 0 13px,transparent 13.5px)}.dsh-fairy-mark-brow{position:absolute;z-index:0;width:0;height:0;border-style:solid}.dsh-fairy-mark-brow[data-side=top]{top:1px;left:50%;border-width:0 7px 7px;border-color:transparent transparent #0b1025;transform:translateX(-50%)}.dsh-fairy-mark-brow[data-side=right]{top:50%;right:1px;border-width:7px 0 7px 7px;border-color:transparent transparent transparent #0b1025;transform:translateY(-50%)}.dsh-fairy-mark-brow[data-side=bottom]{bottom:1px;left:50%;border-width:7px 7px 0;border-color:#0b1025 transparent transparent;transform:translateX(-50%)}.dsh-fairy-mark-brow[data-side=left]{top:50%;left:1px;border-width:7px 7px 7px 0;border-color:transparent #0b1025 transparent transparent;transform:translateY(-50%)}.dsh-fairy-mark-copy{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0;transform:translateY(1px)}.dsh-fairy-mark-title{color:#e8edf5;font-family:"Avenir Next","Arial Narrow","DIN Condensed","Microsoft YaHei",sans-serif;font-size:17px;font-weight:750;line-height:1;letter-spacing:.08em}.dsh-fairy-mark-sub{color:#93a2b6;font-family:var(--dsw-font-family);font-size:9px;font-weight:500;line-height:1;letter-spacing:.06em}@media(max-width:520px){.dsh-fairy-mark-copy{display:none}}`);
 		appendSection("shared-surfaces", `.dsh-fairy-toggle-group{display:inline-flex;align-items:center;height:28px;border:1px solid var(--dsw-alias-border-l2);border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-bg-layer-1) 72%,transparent);color:var(--dsw-alias-label-secondary);overflow:hidden}.dsh-fairy-toggle{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px 0 10px;border:0;background:transparent;color:inherit;font:var(--dsw-font-xs-strong-13,12px system-ui);cursor:pointer}.dsh-fairy-toggle:hover,.dsh-fairy-theme-toggle:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}.dsh-fairy-toggle:active,.dsh-fairy-theme-toggle:active:not(:disabled){background:var(--dsw-alias-interactive-bg-active)}.dsh-fairy-toggle:focus-visible,.dsh-fairy-theme-toggle:focus-visible{position:relative;z-index:1;outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px}.dsh-fairy-theme-toggle{display:grid;place-items:center;width:30px;height:18px;padding:0;border:0;border-left:1px solid var(--dsw-alias-border-l2);background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer}.dsh-fairy-theme-toggle:disabled{cursor:not-allowed;opacity:.35}.dsh-fairy-theme-icon{position:relative;display:block;width:13px;height:13px;box-sizing:border-box}.dsh-fairy-theme-toggle[data-theme="dark"] .dsh-fairy-theme-icon{width:11px;height:11px;border:1.7px solid currentColor;border-top-color:transparent;border-radius:50%;transform:rotate(-38deg)}.dsh-fairy-theme-toggle[data-theme="light"] .dsh-fairy-theme-icon{background:linear-gradient(currentColor,currentColor) center/13px 1px no-repeat,linear-gradient(currentColor,currentColor) center/1px 13px no-repeat,linear-gradient(45deg,transparent 46%,currentColor 46% 54%,transparent 54%),linear-gradient(-45deg,transparent 46%,currentColor 46% 54%,transparent 54%)}.dsh-fairy-theme-toggle[data-theme="light"] .dsh-fairy-theme-icon:before{content:'';position:absolute;left:3px;top:3px;width:7px;height:7px;border:1.5px solid currentColor;border-radius:50%;background:var(--dsw-alias-bg-layer-1);box-sizing:border-box}.dsh-fairy-dot{width:8px;height:8px;border-radius:50%;background:var(--dsw-alias-label-tertiary)}.dsh-fairy-toggle[data-on=true] .dsh-fairy-dot{background:#38bdf8;box-shadow:0 0 6px #38bdf8}`);
-		appendSection("shared-surfaces", `html[data-dsh-fairy-visual] .dsh-fairy-chat-content-anchored{display:flex!important;flex-direction:column!important;justify-content:flex-end!important;min-height:var(--dsh-fairy-chat-anchor-min-height)!important}`);
+		appendSection("shared-surfaces", `html[data-dsh-fairy-visual] [data-question-key],html[data-dsh-fairy-visual] [data-plan-review-key]{box-sizing:border-box!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] body{--dsw-specific-sidebar-fill:transparent!important;--dsw-specific-sidebar-nav-item-hover:#0e243d!important;--dsw-specific-sidebar-nav-item-active:#143553!important;--dsw-specific-sidebar-nav-item-active-accent:#267fc4!important;--dsw-specific-input-major:#0a1c30!important;--dsw-specific-menu:#0e243d!important;--dsw-specific-selector:#0e243d!important;--dsw-specific-bubble:#103052!important;--dsw-specific-tip:#0e243d!important;--dsw-alias-button-elevated-fill:#103052!important;--dsw-alias-button-floating-fill:#103052!important;--dsw-alias-button-floating-hover:#17456f!important;--dsw-alias-button-ghost-active-fill:#17456f!important;--dsw-alias-markdown-citation:#103052!important;--dsw-alias-markdown-code-block:#0a1c30!important;--dsw-alias-markdown-code-block-banner:#0a1c30!important;--dsw-alias-markdown-inline-code:#103052!important;--dsw-alias-markdown-tag:#103052!important;--dsw-alias-markdown-code-segment-selected:#103052!important;--dsw-alias-markdown-code-segment-unselected:#0a1c30!important;--dsw-alias-markdown-placeholder:#0e243d!important;--dsw-alias-scrollbar-bg-l2:#143553!important;--dsw-alias-scrollbar-hover-l2:#267fc4!important}html[data-dsh-fairy-visual] [data-composer-card="true"]{background:#0a1c30!important;border-color:rgba(126,220,255,.28)!important}html[data-dsh-fairy-visual] [data-composer-card="true"] textarea{color:#e8f8ff!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-seat="true"]{background:transparent!important;background-color:transparent!important;background-image:none!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"]{position:fixed!important;bottom:0!important;box-sizing:border-box!important;z-index:1!important;display:flex!important;flex-direction:column!important;min-width:0!important;max-width:none!important;padding:0!important;background:transparent!important;pointer-events:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-slot="conversation.composer.dock"]{display:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-bar-root="true"]{box-sizing:border-box!important;width:100%!important;max-width:none!important;height:100%!important;min-height:0!important;padding:0!important;align-items:stretch!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{box-sizing:border-box!important;display:grid!important;grid-template-columns:minmax(176px,max-content) minmax(0,1fr) minmax(176px,max-content)!important;grid-template-rows:auto minmax(0,1fr)!important;align-items:stretch!important;gap:0 12px!important;width:100%!important;max-width:none!important;height:100%!important;min-height:0!important;margin:0!important;padding:10px 12px!important;border-radius:0!important;pointer-events:auto!important;overflow:hidden!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-input-scroll]{grid-column:2!important;grid-row:2!important;min-width:0!important;min-height:0!important;height:auto!important;max-height:none!important;overflow-y:auto!important;overflow-x:hidden!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-accessory="true"]{grid-column:1 / -1!important;grid-row:1!important;min-width:0!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-row="true"]{display:contents!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-tools="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-trailing="true"]{display:contents!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-tools="true"]>*{grid-column:1!important;grid-row:2!important;align-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"]{grid-column:3!important;grid-row:2!important;align-self:end!important;justify-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-output-control="true"]{grid-column:3!important;grid-row:2!important;align-self:end!important;justify-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{grid-column:2!important;grid-row:2!important;align-self:end!important;justify-self:end!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] .dsh-fairy-composer-resizer{position:absolute;z-index:20;inset:0 0 auto;height:12px;cursor:ns-resize;pointer-events:auto;touch-action:none}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] .dsh-fairy-composer-resizer:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] .dsh-fairy-composer-resizer[data-dragging="true"]{cursor:grabbing}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-input-scroll] textarea{max-height:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"] *{min-width:0}@media(max-width:900px){html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{grid-template-columns:minmax(132px,max-content) minmax(0,1fr) minmax(132px,max-content)!important}}@media(max-width:620px){html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-accessory="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-tools="true"]>*:not([data-dsh-fairy-composer-send-control="true"]),html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-output-control="true"]{display:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-input-scroll],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{grid-column:1!important;grid-row:1!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{justify-self:end!important;align-self:end!important}}`);
@@ -1659,7 +1651,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"]{border:2px solid transparent!important;border-radius:999px!important;background:linear-gradient(#30353a,#30353a) padding-box,linear-gradient(135deg,#555f68 0%,#4e5861 48%,#3d444b 100%) border-box!important;box-shadow:-4px -4px 9px rgba(255,255,255,.06),5px 6px 13px rgba(0,0,0,.13),inset 1px 1px 0 rgba(255,255,255,.03),inset -1px -1px 0 rgba(0,0,0,.13)!important}html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"]{background:linear-gradient(#f4f5f6,#f4f5f6) padding-box,linear-gradient(135deg,#dfe5e9 0%,#dce2e6 48%,#c1c8ce 100%) border-box!important;box-shadow:-4px -4px 9px rgba(255,255,255,.46),5px 6px 13px rgba(52,63,73,.10),inset 1px 1px 0 rgba(255,255,255,.58),inset -1px -1px 0 rgba(52,63,73,.08)!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual][data-dsh-fairy-theme="dark"] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"]{border:2px solid transparent!important;background:linear-gradient(#30353a,#30353a) padding-box,linear-gradient(135deg,#555f68 0%,#4e5861 48%,#3d444b 100%) border-box!important;box-shadow:-4px -4px 9px rgba(255,255,255,.06),5px 6px 13px rgba(0,0,0,.13),inset 1px 1px 0 rgba(255,255,255,.03),inset -1px -1px 0 rgba(0,0,0,.13)!important}html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"]{border:2px solid transparent!important;background:linear-gradient(#f4f5f6,#f4f5f6) padding-box,linear-gradient(135deg,#dfe5e9 0%,#dce2e6 48%,#c1c8ce 100%) border-box!important;box-shadow:-4px -4px 9px rgba(255,255,255,.46),5px 6px 13px rgba(52,63,73,.10),inset 1px 1px 0 rgba(255,255,255,.58),inset -1px -1px 0 rgba(52,63,73,.08)!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{--dsh-fairy-composer-wing:140px!important;--dsh-fairy-composer-voice-width:124px!important;--dsh-fairy-composer-voice-right:14px!important;--dsh-fairy-input-side:140px!important;--dsh-fairy-composer-reasoning-width:220px!important;grid-template-columns:140px minmax(0,1fr) 124px!important;column-gap:14px!important;padding:10px 14px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-workspace="true"]{left:0!important;width:140px!important;height:122px!important;display:block!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-workspace-control="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-mode-control="true"]{left:14px!important;max-width:112px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-mode-control="true"]>button{max-width:112px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-workspace-control="true"]{top:8px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-mode-control="true"]{top:50px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-access-control="true"]{left:0!important;top:92px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-command-control="true"]{left:140px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{right:140px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-model-control="true"]{left:14px!important;width:140px!important;max-width:140px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"]{right:14px!important;width:124px!important;min-width:124px!important;max-width:124px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-scale-base="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-animation-speed-base="true"]{right:14px!important;width:124px!important;min-width:124px!important;max-width:124px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-scale-base="true"]{top:42px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-animation-speed-base="true"]{top:78px!important}@media(max-width:900px){html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{--dsh-fairy-composer-wing:118px!important;--dsh-fairy-composer-voice-width:104px!important;--dsh-fairy-input-side:118px!important;grid-template-columns:118px minmax(0,1fr) 104px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-workspace="true"]{width:118px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-command-control="true"]{left:118px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-send-control="true"]{right:118px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-scale-base="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-animation-speed-base="true"]{width:104px!important;min-width:104px!important;max-width:104px!important}}`);
-		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-animation-speed-base="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-scale-base="true"]{right:-146px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-animation-speed-base="true"]{top:39px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-scale-base="true"]{top:78px!important}`);
+		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-voice-control="true"]{right:14px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-animation-speed-base="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-scale-base="true"]{right:0!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-animation-speed-base="true"]{top:39px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-scale-base="true"]{top:78px!important}`);
 		// Lock all three right-hand capsules to one complete housing geometry.
 		appendSection("composer", `html[data-dsh-fairy-visual] #dsh-fairy-voicebar{height:28px!important;min-height:28px!important;max-height:28px!important;padding:0!important;overflow:visible!important}html[data-dsh-fairy-visual] #dsh-fairy-voicebar > .vb-row,html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-animation-speed-base="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-scale-base="true"]{box-sizing:border-box!important;height:28px!important;min-height:28px!important;max-height:28px!important;padding:0!important;border:2px solid transparent!important;border-radius:999px!important;overflow:hidden!important}html[data-dsh-fairy-visual] #dsh-fairy-voicebar > .vb-row{display:flex!important;flex:0 0 28px!important;width:100%!important;background:linear-gradient(90deg,rgba(54,88,133,.98) 0 calc(var(--vb-level) - 12%),rgba(35,55,82,.98) calc(var(--vb-level) + 6%) 100%) padding-box,linear-gradient(135deg,#555f68 0%,#4e5861 48%,#3d444b 100%) border-box!important;box-shadow:-4px -4px 9px rgba(255,255,255,.06),5px 6px 13px rgba(0,0,0,.13),inset 1px 1px 0 rgba(255,255,255,.03),inset -1px -1px 0 rgba(0,0,0,.13)!important}html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] #dsh-fairy-voicebar > .vb-row{background:linear-gradient(90deg,rgba(54,88,133,.98) 0 calc(var(--vb-level) - 12%),rgba(35,55,82,.98) calc(var(--vb-level) + 6%) 100%) padding-box,linear-gradient(135deg,#dfe5e9 0%,#dce2e6 48%,#c1c8ce 100%) border-box!important;box-shadow:-4px -4px 9px rgba(255,255,255,.46),5px 6px 13px rgba(52,63,73,.10),inset 1px 1px 0 rgba(255,255,255,.58),inset -1px -1px 0 rgba(52,63,73,.08)!important}html[data-dsh-fairy-visual] #dsh-fairy-voicebar .vb-dot,html[data-dsh-fairy-visual] #dsh-fairy-voicebar .vb-wave{position:relative!important;z-index:1!important}html[data-dsh-fairy-visual] #dsh-fairy-voicebar .vb-wave{height:24px!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-animation-speed-control="true"],html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-mascot-scale-base="true"] [data-dsh-fairy-mascot-scale-control="true"]{inset:4px!important;box-sizing:border-box!important;height:auto!important;min-height:0!important;max-height:none!important;border-radius:999px!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{overflow:visible!important}`);
@@ -1670,6 +1662,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
   // Use one complete, theme-aware perimeter on the real card instead.
   appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-material="true"]{display:none!important;visibility:hidden!important;pointer-events:none!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{box-sizing:border-box!important;border:2px solid transparent!important;border-radius:18px!important;background:linear-gradient(#090b16,#090b16) padding-box,linear-gradient(135deg,#555f68 0%,#4e5861 48%,#3d444b 100%) border-box!important;box-shadow:0 0 0 1px rgba(0,0,0,.28),0 10px 28px -18px rgba(0,0,0,.78)!important}html[data-dsh-fairy-visual][data-dsh-fairy-theme="light"] [data-dsh-fairy-composer-dock="true"] [data-composer-card="true"]{background:linear-gradient(#f7fafc,#f7fafc) padding-box,linear-gradient(135deg,#dfe5e9 0%,#dce2e6 48%,#c1c8ce 100%) border-box!important;box-shadow:0 0 0 1px rgba(52,63,73,.12),0 10px 28px -18px rgba(52,63,73,.28)!important}html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-input-scroll]{inset:2px!important;margin:0!important;border-radius:16px!important}`);
 		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-dsh-fairy-composer-workspace="true"]{display:none!important;visibility:hidden!important;pointer-events:none!important}`);
+		appendSection("composer", `html[data-dsh-fairy-visual] [data-dsh-fairy-composer-dock="true"] [data-composer-dock="true"]{display:none!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important}`);
 		el.textContent = cssSections.map(({ css }) => css).join("");
 		(document.head || document.documentElement).appendChild(el);
 	}
@@ -3371,56 +3364,19 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 //#endregion
 //#region src/client/composer-inset-synchronizer.js
 	var require_composer_inset_synchronizer = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-		function createInsetSynchronizer({ getScrollNodes, getHeight, requestFrame, cancelFrame, isDisposed }) {
-			let frame = 0;
-			let tracked = /* @__PURE__ */ new Map();
-			const restorePadding = ({ node, padding, paddingPriority }) => {
-				if (!node?.isConnected) return;
-				if (padding === "") node.style.removeProperty("padding-bottom");
-				else node.style.setProperty("padding-bottom", padding, paddingPriority);
-				node.style.removeProperty("--dsh-fairy-composer-inset");
-			};
-			const sync = () => {
-				frame = 0;
-				const height = getHeight();
-				const next = /* @__PURE__ */ new Map();
-				getScrollNodes().forEach((node) => {
-					const existing = tracked.get(node);
-					const padding = existing?.padding ?? node.style.getPropertyValue("padding-bottom");
-					const paddingPriority = existing?.paddingPriority ?? node.style.getPropertyPriority("padding-bottom");
-					const basePadding = existing?.basePadding ?? getComputedStyle(node).paddingBottom;
-					next.set(node, {
-						node,
-						padding,
-						paddingPriority,
-						basePadding
-					});
-					node.style.setProperty("--dsh-fairy-composer-inset", String(height) + "px");
-					node.style.setProperty("padding-bottom", "calc(" + basePadding + " + " + height + "px)", "important");
-				});
-				tracked.forEach((previous, node) => {
-					if (next.has(node)) return;
-					restorePadding(previous);
-				});
-				tracked = next;
-			};
-			const schedule = () => {
-				if (!frame && !isDisposed()) frame = requestFrame(sync);
-			};
-			const flush = () => {
-				if (frame) cancelFrame(frame);
-				frame = 0;
-				sync();
-			};
+		function createInsetSynchronizer() {
+			// DSH's composer seat already publishes the reserved scroll height. Extra
+			// padding written from a geometry sampler conflicts with tail following.
 			const clear = () => {
-				if (frame) cancelFrame(frame);
-				frame = 0;
-				tracked.forEach(restorePadding);
-				tracked.clear();
+				document.querySelectorAll("[data-conversation-scroll]").forEach((node) => {
+					node.style.removeProperty("--dsh-fairy-composer-inset");
+				});
 			};
 			return {
-				schedule,
-				flush,
+				schedule() {
+				},
+				flush() {
+				},
 				clear
 			};
 		}
@@ -3430,89 +3386,23 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 //#endregion
 //#region src/client/chat-content-anchor.js
 	var require_chat_content_anchor = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-		const { OFFICIAL_SELECTORS } = require_dom_adapter();
 		const ANCHORED_CLASS = "dsh-fairy-chat-content-anchored";
 		const ANCHOR_MIN_HEIGHT = "--dsh-fairy-chat-anchor-min-height";
-		function createChatContentAnchor({ getFlowNodes, getComposerNode, requestFrame, cancelFrame, isDisposed }) {
-			let frame = 0;
-			let tracked = /* @__PURE__ */ new Map();
-			let resizeObserver = null;
-			let resizeNodes = /* @__PURE__ */ new Set();
-			const restore = (node, previous) => {
-				if (!node?.isConnected) return;
-				node.classList.remove(ANCHORED_CLASS);
-				if (previous.anchorMinHeight === "") node.style.removeProperty(ANCHOR_MIN_HEIGHT);
-				else node.style.setProperty(ANCHOR_MIN_HEIGHT, previous.anchorMinHeight);
-			};
-			const bindResizeNodes = () => {
-				if (typeof ResizeObserver !== "function") return;
-				const next = new Set([...getFlowNodes?.() || [], getComposerNode?.()].filter(Boolean));
-				if (next.size === resizeNodes.size && [...next].every((node) => resizeNodes.has(node))) return;
-				resizeObserver?.disconnect();
-				resizeObserver = new ResizeObserver(schedule);
-				next.forEach((node) => resizeObserver.observe(node));
-				resizeNodes = next;
-			};
-			const sync = () => {
-				frame = 0;
-				bindResizeNodes();
-				const composerRect = getComposerNode?.()?.getBoundingClientRect?.();
-				const next = /* @__PURE__ */ new Map();
-				if (!composerRect || composerRect.width < 1 || composerRect.height < 1) {
-					tracked.forEach((previous, node) => restore(node, previous));
-					tracked.clear();
-					return;
-				}
-				(getFlowNodes?.() || []).forEach((node) => {
-					if (!node?.isConnected) return;
-					const previous = tracked.get(node) || {
-						anchorMinHeight: node.style.getPropertyValue(ANCHOR_MIN_HEIGHT),
-						anchored: false
-					};
-					if (previous.anchored) {
-						node.classList.remove(ANCHORED_CLASS);
-						if (previous.anchorMinHeight === "") node.style.removeProperty(ANCHOR_MIN_HEIGHT);
-						else node.style.setProperty(ANCHOR_MIN_HEIGHT, previous.anchorMinHeight);
-					}
-					const rect = node.getBoundingClientRect();
-					if (rect.width < 1 || rect.height < 1) return;
-					next.set(node, previous);
-					const scrollRect = (node.closest?.(OFFICIAL_SELECTORS.conversationScroll))?.getBoundingClientRect?.();
-					const availableHeight = scrollRect ? Math.max(0, composerRect.top - scrollRect.top) : composerRect.top;
-					const parentStyle = node.parentElement ? getComputedStyle(node.parentElement) : null;
-					const parentBottomPadding = Number.parseFloat(parentStyle?.paddingBottom || "0") || 0;
-					if (rect.height <= availableHeight + parentBottomPadding + 1) {
-						const minHeight = Math.max(0, Math.ceil(rect.height + composerRect.top - rect.bottom));
-						node.style.setProperty(ANCHOR_MIN_HEIGHT, `${minHeight}px`);
-						node.classList.add(ANCHORED_CLASS);
-						previous.anchored = true;
-					} else previous.anchored = false;
-				});
-				tracked.forEach((previous, node) => {
-					if (!next.has(node)) restore(node, previous);
-				});
-				tracked = next;
-			};
-			function schedule() {
-				if (!frame && !isDisposed?.()) frame = requestFrame(sync);
-			}
-			const flush = () => {
-				if (frame) cancelFrame(frame);
-				frame = 0;
-				sync();
-			};
+		function createChatContentAnchor() {
+			// DSH already owns conversation tail following and composer-height anchoring.
+			// A second measure-and-write loop here feeds native layout changes back into
+			// itself, which makes the complete conversation surface oscillate.
 			const clear = () => {
-				if (frame) cancelFrame(frame);
-				frame = 0;
-				resizeObserver?.disconnect();
-				resizeObserver = null;
-				resizeNodes.clear();
-				tracked.forEach((previous, node) => restore(node, previous));
-				tracked.clear();
+				document.querySelectorAll(`.${ANCHORED_CLASS}`).forEach((node) => {
+					node.classList.remove(ANCHORED_CLASS);
+					node.style.removeProperty(ANCHOR_MIN_HEIGHT);
+				});
 			};
 			return {
-				schedule,
-				flush,
+				schedule() {
+				},
+				flush() {
+				},
 				clear
 			};
 		}
@@ -3526,9 +3416,8 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 		const CONTROL_MARKER = "data-dsh-fairy-to-bottom-control";
 		const OFFSET_PROPERTY = "--dsh-fairy-to-bottom-offset";
 		const ROOT_BOTTOM_PROPERTY = "--dsh-fairy-to-bottom-bottom";
-		const GAP = 12;
 		const { toBottomControl } = require_dom_adapter();
-		function createToBottomPositioner({ getScrollNodes, getComposerNode, requestFrame, cancelFrame, isDisposed }) {
+		function createToBottomPositioner({ getScrollNodes, requestFrame, cancelFrame, isDisposed }) {
 			let frame = 0;
 			let tracked = /* @__PURE__ */ new Map();
 			let scrollNodes = /* @__PURE__ */ new Set();
@@ -3539,14 +3428,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				if (!frame && !isDisposed()) frame = requestFrame(sync);
 			};
 			const bindScrollNodes = () => {
-				const next = new Set((getScrollNodes?.() || []).filter(Boolean));
-				scrollNodes.forEach((node) => {
-					if (!next.has(node)) node.removeEventListener("scroll", schedule);
-				});
-				next.forEach((node) => {
-					if (!scrollNodes.has(node)) node.addEventListener("scroll", schedule, { passive: true });
-				});
-				scrollNodes = next;
+				scrollNodes = new Set((getScrollNodes?.() || []).filter(Boolean));
 			};
 			const restoreNode = ({ node, slot, property, priority }) => {
 				if (slot?.isConnected) slot.removeAttribute(SLOT_MARKER);
@@ -3578,7 +3460,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			function sync() {
 				frame = 0;
 				bindScrollNodes();
-				const composerRect = getComposerNode?.()?.getBoundingClientRect?.();
+				const composerRect = null;
 				const next = /* @__PURE__ */ new Map();
 				const activeControls = /* @__PURE__ */ new Set();
 				let bottom = null;
@@ -4396,6 +4278,11 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			clearMarker(root, name);
 			root?.querySelectorAll?.(`[${name}]`).forEach((node) => clearMarker(node, name));
 		}
+		function ensureComposerOwnership(node) {
+			if (!node?.isConnected || node.getAttribute(COMPOSER_ATTR) === "true") return false;
+			node.setAttribute(COMPOSER_ATTR, "true");
+			return true;
+		}
 		function mountComposerDock(controller) {
 			const lifecycle = claimSingleton(document, "composer-dock", createLifecycleScope("composer-dock"));
 			const domObserverManager = getDomObserverManager(document);
@@ -4404,7 +4291,6 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 			let structureFrame = 0;
 			let observer = null;
 			let headerObserver = null;
-			let resizeObserver = null;
 			let conversation = null;
 			let surface = null;
 			let observedHeaderActions = null;
@@ -4491,8 +4377,6 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				contentAnchor.clear();
 				toBottomPositioner.clear();
 				clearScrollInsets();
-				resizeObserver?.disconnect();
-				resizeObserver = null;
 				conversation = null;
 				surface = null;
 				if (clearWorkspaceTemplate) workspaceTemplate = null;
@@ -4624,6 +4508,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 					contentAnchor.clear();
 					return;
 				}
+				const ownershipRestored = ensureComposerOwnership(currentSeat);
 				if (currentConversation !== conversation || currentSeat !== seat) {
 					restoreSeat();
 					conversation = currentConversation;
@@ -4660,6 +4545,12 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 					card = currentCard;
 					removeLegacyVoiceDensityMarker();
 					clearControls = placeNativeControlMarkers(card);
+				} else if (ownershipRestored) {
+					// The host can reconcile the native seat without replacing the node and
+					// strip only Fairy's data attribute. Restore it before paint so the
+					// native card never falls back to its narrower three-column geometry.
+					clearControls();
+					clearControls = placeNativeControlMarkers(card);
 				}
 				removeLegacyMascotScaleControl();
 				ensureMascotScaleBase();
@@ -4670,14 +4561,7 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				ensureWorkspaceProjection(stack, workspaceRow);
 				syncReasoningMenuLayer();
 				const currentSurface = resolvedSession.surface;
-				if (currentSurface !== surface) {
-					resizeObserver?.disconnect();
-					surface = currentSurface;
-					if (surface && typeof ResizeObserver === "function") {
-						resizeObserver = new ResizeObserver(schedule);
-						resizeObserver.observe(surface);
-					}
-				}
+				surface = currentSurface;
 				const rect = surface?.getBoundingClientRect();
 				if (!rect || rect.width < 1 || rect.height < 1) return;
 				if (!resizeController.dragging) height = readHeight();
@@ -4699,14 +4583,10 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				const nextSession = sessionResolver.resolve();
 				const nextConversation = nextSession.conversation;
 				const nextSurface = nextSession.surface;
+				ensureComposerOwnership(nextSession.seat);
 				if (nextConversation !== conversation || nextSurface !== surface) {
-					resizeObserver?.disconnect();
 					conversation = nextConversation;
 					surface = nextSurface;
-					if (conversation && typeof ResizeObserver === "function") {
-						resizeObserver = new ResizeObserver(schedule);
-						if (surface) resizeObserver.observe(surface);
-					}
 				}
 				bindHeaderObserver();
 				if (seat && card) {
@@ -4734,9 +4614,10 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 						if ((record.target?.nodeType === 1 ? record.target : record.target?.parentElement)?.closest?.(`[${OFFICIAL_ATTRIBUTES.composerSeat}]`)) return true;
 						return [...record.addedNodes, ...record.removedNodes].some((node) => node.nodeType === 1 && (node.matches?.(`[${OFFICIAL_ATTRIBUTES.composerSeat}]`) || node.querySelector?.(`[${OFFICIAL_ATTRIBUTES.composerSeat}]`)));
 					}
-					return record.attributeName === OFFICIAL_ATTRIBUTES.phase || record.attributeName === OFFICIAL_ATTRIBUTES.composerSeat || record.attributeName === OFFICIAL_ATTRIBUTES.slot || record.attributeName === "aria-expanded";
+					return record.attributeName === OFFICIAL_ATTRIBUTES.phase || record.attributeName === OFFICIAL_ATTRIBUTES.composerSeat || record.attributeName === OFFICIAL_ATTRIBUTES.slot || record.attributeName === "aria-expanded" || record.attributeName === COMPOSER_ATTR && record.target?.getAttribute?.(COMPOSER_ATTR) !== "true";
 				};
-				if (records.some((record) => headerPresetChanged(record) || composerStructureChanged(record))) scheduleStructure();
+				const ownershipRestored = records.some((record) => record.attributeName === COMPOSER_ATTR && record.target === seat && ensureComposerOwnership(seat));
+				if (ownershipRestored || records.some((record) => headerPresetChanged(record) || composerStructureChanged(record))) scheduleStructure();
 				if (records.some((record) => record.attributeName === "aria-expanded" || record.type === "childList")) syncReasoningMenuLayer();
 			});
 			observer = mutationObserver;
@@ -4748,7 +4629,8 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 					OFFICIAL_ATTRIBUTES.phase,
 					OFFICIAL_ATTRIBUTES.composerSeat,
 					OFFICIAL_ATTRIBUTES.slot,
-					"aria-expanded"
+					"aria-expanded",
+					COMPOSER_ATTR
 				]
 			});
 			headerObserver = createManagedMutationObserver(scheduleStructure);
@@ -4763,6 +4645,16 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				schedule();
 			});
 			bind();
+			const bindingWatchdog = window.setInterval(() => {
+				if (!enabled() || disposed) return;
+				const resolved = sessionResolver.resolve();
+				if (!resolved.conversation || !resolved.seat || !resolved.card) return;
+				if (resolved.conversation !== conversation || resolved.seat !== seat || resolved.card !== card || resolved.seat.getAttribute(COMPOSER_ATTR) !== "true") {
+					ensureComposerOwnership(resolved.seat);
+					scheduleStructure();
+				}
+			}, 300);
+			lifecycle.add(() => window.clearInterval(bindingWatchdog), "composer-dock:binding-watchdog");
 			const cleanup = () => {
 				disposed = true;
 				domObserverManager.cancelFrame(layoutFrameKey);
@@ -4770,7 +4662,6 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				observer?.disconnect();
 				headerObserver?.disconnect();
 				observedHeaderActions = null;
-				resizeObserver?.disconnect();
 				off?.();
 				window.removeEventListener("resize", schedule);
 				window.visualViewport?.removeEventListener("resize", schedule);

@@ -334,7 +334,10 @@ const diagnostics = createFairyDiagnostics('dsh-fairy-visual');
         let startTimer = 0;
         let audioCleanup = null;
         const hour = new Date().getHours();
-        const dayGreeting = hour >= 5 && hour < 11 ? '早上好' : hour >= 11 && hour < 13 ? '中午好' : hour >= 13 && hour < 18 ? '下午好' : '晚上好';
+        const dayGreeting = hour >= 5 && hour < 11 ? '早上好'
+          : hour >= 11 && hour < 13 ? '中午好'
+            : hour >= 13 && hour < 18 ? '下午好'
+              : '晚上好';
         const fallbackIntroText = '我是三型总序式集成泛用人工智能，您可以称呼我为 Fairy。根据您签署的用户协议，我将在所有环节上，辅佐您，协助您。完成自己的工作，很高兴为您服务。主人。';
         const dayText = `${dayGreeting}，主人。`;
         const fallbackStartupVoice = {
